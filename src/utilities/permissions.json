@@ -1,0 +1,44 @@
+{
+    "cashier": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ],
+    "cashier_point": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ],
+    "data_order": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ],
+    "data_pelanggan": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ],
+    "stock_opname": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ],
+    "laporan": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ],
+    "settings": [
+        "read",
+        "create",
+        "update",
+        "delete"
+    ]
+}
