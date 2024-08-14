@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginateResult, PaginateModel, Types } from 'mongoose';
+import { PaginateModel, PaginateResult, Types } from 'mongoose';
 import { CreateStockOpnameDto } from '../dto/create-stock-opname.dto';
 import { GetStockOpnameDto } from '../dto/get-stock-opname.dto';
 import { StockOpnameEntity } from '../schema/stock-opname.schema';
@@ -20,10 +20,10 @@ export class StockOpnamesService {
   async get(
     dto: GetStockOpnameDto,
   ): Promise<PaginateResult<StockOpnameEntity>> {
-    const { page = 1, limit = 10, warehouse } = dto;
+    const { page, limit, warehouse } = dto;
     const options = {
       page,
-      limit,
+      limit: limit || 10,
       sort: { created_at: -1 },
     };
 
@@ -33,5 +33,29 @@ export class StockOpnamesService {
 
   async getById(id: Types.ObjectId): Promise<StockOpnameEntity> {
     return this.stockOpnameModel.findById(id).exec();
+  }
+
+  async update(
+    id: Types.ObjectId,
+    dto: CreateStockOpnameDto,
+  ): Promise<StockOpnameEntity> {
+    return this.stockOpnameModel.findOneAndUpdate(
+      { _id: id },
+      { $set: dto },
+      { new: true },
+    );
+  }
+
+  async delete(id: Types.ObjectId) {
+    return this.stockOpnameModel.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
   }
 }
