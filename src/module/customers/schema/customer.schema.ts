@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 @Schema({
   collection: 'customers',
@@ -32,3 +33,4 @@ export class CustomerEntity extends Document {
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(CustomerEntity);
+CustomerSchema.plugin(mongoosePaginate);

@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -31,6 +32,7 @@ export class GetCustomerDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   readonly loyalty_points?: number;
 
   @ApiPropertyOptional()

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDateString,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -8,6 +7,7 @@ import {
   MaxLength,
   IsBoolean,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCustomerDto {
   @ApiProperty()
@@ -32,22 +32,12 @@ export class CreateCustomerDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
   @IsNotEmpty()
+  @Type(() => Number)
   loyalty_points?: number;
 
   @ApiProperty()
   @IsOptional()
   @IsBoolean()
   is_active?: boolean;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsDateString()
-  created_at?: Date;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsDateString()
-  updated_at?: Date;
 }
