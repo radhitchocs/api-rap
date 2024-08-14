@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginateModel, PaginateResult } from 'mongoose';
+import { PaginateModel, PaginateResult, Types } from 'mongoose';
 import { OrderPointEntity } from '../schema/order_point.schema';
 
 import { CreateOrderPointDto } from '../dto/create-order_point.dto';
@@ -13,11 +13,6 @@ export class OrderPointsService {
     private orderPointModel: PaginateModel<OrderPointEntity>,
   ) {}
 
-  async create(dto: CreateOrderPointDto): Promise<OrderPointEntity> {
-    const newOrderPoint = new this.orderPointModel(dto);
-    return newOrderPoint.save();
-  }
-
   async get(dto: GetOrderPointDto): Promise<PaginateResult<OrderPointEntity>> {
     const { order_id, customer_id } = dto;
     const filter: any = {};
@@ -28,5 +23,46 @@ export class OrderPointsService {
       sort: { created_at: -1 },
       limit: 10,
     });
+  }
+
+  async getById(id: Types.ObjectId): Promise<OrderPointEntity> {
+    return this.orderPointModel.findById(id).exec();
+  }
+
+  async create(dto: CreateOrderPointDto): Promise<OrderPointEntity> {
+    const newOrderPoint = new this.orderPointModel(dto);
+    return newOrderPoint.save();
+  }
+
+  async update(
+    id: Types.ObjectId,
+    dto: CreateOrderPointDto,
+  ): Promise<OrderPointEntity> {
+    const product = await this.orderPointModel.findById(id).exec();
+
+    if (!product) {
+      throw new Error('Order point not found');
+    }
+
+    return await this.orderPointModel.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: dto,
+      },
+      { new: true },
+    );
+  }
+
+  async delete(id: Types.ObjectId): Promise<OrderPointEntity> {
+    return await this.orderPointModel.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
   }
 }
