@@ -47,4 +47,34 @@ export class OrdersService {
       )
       .exec();
   }
+
+  async update(
+    orderId: Types.ObjectId,
+    dto: CreateOrderDto,
+  ): Promise<OrderEntity> {
+    const order = await this.orderModel.findById(orderId).lean();
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    return await this.orderModel.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: dto,
+      },
+      { new: true },
+    );
+  }
+
+  async delete(orderId: Types.ObjectId) {
+    return await this.orderModel.findByIdAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
+  }
 }
