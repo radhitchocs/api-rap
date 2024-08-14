@@ -29,4 +29,34 @@ export class OrderDetailsService {
   async getByOrderId(orderId: Types.ObjectId): Promise<OrderDetailEntity[]> {
     return this.orderDetailModel.find({ orderId }).exec();
   }
+
+  async update(
+    orderId: Types.ObjectId,
+    dto: CreateOrderDetailDto,
+  ): Promise<OrderDetailEntity> {
+    const order = await this.orderDetailModel.findById(orderId).lean();
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    return await this.orderDetailModel.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: dto,
+      },
+      { new: true },
+    );
+  }
+
+  async delete(orderId: Types.ObjectId): Promise<OrderDetailEntity> {
+    return await this.orderDetailModel.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
+  }
 }
