@@ -12,6 +12,4 @@ export interface ProductInterface extends Document {
     promo_price: number;
   };
   loyalty_points: number;
-  created_at: Date;
-  updated_at: Date;
 }

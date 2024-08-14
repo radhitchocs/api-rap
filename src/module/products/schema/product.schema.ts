@@ -29,12 +29,6 @@ export class ProductEntity extends Document {
 
   @Prop()
   loyalty_points: number;
-
-  @Prop()
-  created_at: Date;
-
-  @Prop()
-  updated_at: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(ProductEntity);

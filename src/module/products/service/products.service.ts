@@ -26,4 +26,36 @@ export class ProductsService {
   async getById(productId: Types.ObjectId): Promise<ProductInterface> {
     return this.productModel.findById(productId).exec();
   }
+
+  async update(
+    productId: Types.ObjectId,
+    dto: CreateProductDto,
+  ): Promise<ProductInterface> {
+    const product = await this.productModel.findById(productId).lean();
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    return await this.productModel.findOneAndUpdate(
+      { _id: productId },
+      {
+        $set: dto,
+      },
+      { new: true },
+    );
+  }
+
+  async delete(productId: Types.ObjectId): Promise<ProductInterface> {
+    return await this.productModel.findOneAndUpdate(
+      { _id: productId },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
+  }
 }

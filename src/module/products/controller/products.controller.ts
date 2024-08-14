@@ -8,26 +8,22 @@ import {
   Param,
   UploadedFile,
   UseInterceptors,
+  Patch,
+  Delete,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/decorator/response.decorator';
-import { IsPublic } from 'src/metadata/metadata/is-public.metadata';
 
 import { CreateProductDto } from '../dto/create-product.dto';
 import { GetProductDto } from '../dto/get-product.dto';
 import { ProductsService } from '../service/products.service';
+import { ProductInterface } from '../interface/product.interface';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { validateFileExtension, storage } from 'src/config/storage.config';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-
-  @Post()
-  @ResponseMessage('Product has been created successfully.')
-  async create(@Body() dto: CreateProductDto) {
-    const result = await this.productsService.create(dto);
-    return result;
-  }
 
   @Get()
   @ResponseMessage('Successfully fetched products!')
@@ -43,5 +39,59 @@ export class ProductsController {
       new Types.ObjectId(productId),
     );
     return result;
+  }
+
+  @Post()
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage,
+      fileFilter: (req, file, callback) => {
+        validateFileExtension(req, file, callback)(['.jpg', '.png', '.jpeg']);
+      },
+    }),
+  )
+  @ResponseMessage('Product has been created successfully.')
+  async create(
+    @Body() dto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ProductInterface> {
+    const result = await this.productsService.create({
+      ...dto,
+      image: file.filename,
+    });
+    return result;
+  }
+
+  @Patch('/:productId')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage,
+      fileFilter: (req, file, callback) => {
+        validateFileExtension(req, file, callback)(['.jpg', '.png', '.jpeg']);
+      },
+    }),
+  )
+  @ResponseMessage('Successfully updated product details!')
+  async update(
+    @Param('productId') productId: string,
+    @Body() dto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ProductInterface> {
+    const updateData = { ...dto };
+
+    if (file) {
+      updateData.image = file.filename;
+    }
+
+    return this.productsService.update(
+      new Types.ObjectId(productId),
+      updateData,
+    );
+  }
+
+  @Delete('/:productId')
+  @ResponseMessage('Successfully deleted product!')
+  async delete(@Param('productId') productId: string) {
+    return this.productsService.delete(new Types.ObjectId(productId));
   }
 }

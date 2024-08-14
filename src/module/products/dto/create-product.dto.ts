@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,6 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
+import { Type } from 'class-transformer';
 export class CreateProductDto {
   @ApiProperty()
   @IsString()
@@ -21,23 +21,24 @@ export class CreateProductDto {
   description: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   image: string;
 
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  @Type(() => Number)
   quantity: number;
 
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  @Type(() => Number)
   buy_price: number;
 
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  @Type(() => Number)
   sell_price: number;
 
   @ApiPropertyOptional()
@@ -50,15 +51,6 @@ export class CreateProductDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  @Type(() => Number)
   loyalty_points: number;
-
-  @ApiProperty()
-  @IsDateString()
-  @IsNotEmpty()
-  created_at: Date;
-
-  @ApiProperty()
-  @IsDateString()
-  @IsNotEmpty()
-  updated_at: Date;
 }
