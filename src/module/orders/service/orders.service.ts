@@ -111,6 +111,18 @@ export class OrdersService {
       // We keep dto.user_id as is, since it's already a string
     }
 
+    if (dto.payment_method_id) {
+      const payment_method = await this.paymentMethodsService.getById(
+        dto.payment_method_id,
+      );
+      if (!payment_method) {
+        throw new NotFoundException(
+          `Payment method with ID "${dto.payment_method_id}" not found`,
+        );
+      }
+      // We keep dto.payment_method_id as is, since it's already a string
+    }
+
     return await this.orderModel.findOneAndUpdate(
       { _id: orderId },
       { $set: dto },
