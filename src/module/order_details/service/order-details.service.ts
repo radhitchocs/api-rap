@@ -17,15 +17,6 @@ export class OrderDetailsService {
   ) {}
 
   async create(dto: CreateOrderDetailDto): Promise<OrderDetailEntity> {
-    // Ambil orderId dari koleksi orders
-    const order = await this.ordersService.getById(
-      new Types.ObjectId(dto.orderId),
-    );
-    if (!order) {
-      throw new NotFoundException(`Order with ID "${dto.orderId}" not found`);
-    }
-
-    // Ambil productId dari koleksi products
     const product = await this.productsService.getById(
       new Types.ObjectId(dto.productId),
     );
@@ -35,10 +26,15 @@ export class OrderDetailsService {
       );
     }
 
+    const amount = dto.price * dto.quantity - dto.discount;
+
     const newOrderDetail = new this.orderDetailModel({
-      ...dto,
-      orderId: new Types.ObjectId(dto.orderId), // Assign orderId as ObjectId
-      productId: new Types.ObjectId(dto.productId), // Assign productId as ObjectId
+      orderId: dto.orderId,
+      productId: dto.productId,
+      quantity: dto.quantity,
+      price: dto.price,
+      discount: dto.discount,
+      amount: amount,
     });
 
     return newOrderDetail.save();
@@ -86,8 +82,19 @@ export class OrderDetailsService {
       }
     }
 
+    const amount = (dto.price - dto.discount) * dto.quantity;
+
     return await this.orderDetailModel
-      .findByIdAndUpdate(id, { $set: dto }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            ...dto,
+            amount: amount, // Update amount berdasarkan perhitungan baru
+          },
+        },
+        { new: true },
+      )
       .exec();
   }
 

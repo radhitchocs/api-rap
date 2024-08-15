@@ -22,8 +22,4 @@ export class CreateOrderDetailDto {
   @ApiProperty()
   @IsNumber()
   discount: number;
-
-  @ApiProperty()
-  @IsNumber()
-  amount: number;
 }

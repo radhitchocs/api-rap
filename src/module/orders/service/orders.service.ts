@@ -1,13 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+// src/module/orders/service/orders.service.ts
+import {
+  forwardRef,
+  Injectable,
+  NotFoundException,
+  Inject,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-
 import { CreateOrderDto } from '../dto/create-order.dto';
-import { GetOrderDto } from '../dto/get-order.dto';
 import { OrderEntity } from '../schema/order.schema';
 import { CustomersService } from 'src/module/customers/service/customers.service';
 import { UserService } from 'src/module/users/service/users.service';
 import { PaymentMethodsService } from 'src/module/payment-methods/service/payment-methods.service';
+import { OrderDetailsService } from 'src/module/order_details/service/order-details.service';
+import { GetOrderDto } from '../dto/get-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -17,6 +23,8 @@ export class OrdersService {
     private readonly customersService: CustomersService,
     private readonly userService: UserService,
     private readonly paymentMethodsService: PaymentMethodsService,
+    @Inject(forwardRef(() => OrderDetailsService))
+    private readonly orderDetailsService: OrderDetailsService,
   ) {}
 
   async create(dto: CreateOrderDto): Promise<OrderEntity> {
@@ -44,13 +52,29 @@ export class OrdersService {
     }
 
     const newOrder = new this.orderModel({
-      ...dto,
       customer_id: new Types.ObjectId(dto.customer_id),
       user_id: new Types.ObjectId(dto.user_id),
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
+      total: dto.total,
+      payment_status: dto.payment_status,
     });
 
-    return newOrder.save();
+    const savedOrder = (await newOrder.save()) as OrderEntity & {
+      _id: Types.ObjectId;
+    };
+
+    // Create order details automatically
+    for (const detail of dto.order_details) {
+      await this.orderDetailsService.create({
+        orderId: savedOrder._id, // No need to wrap in new Types.ObjectId, it's already the correct type
+        productId: new Types.ObjectId(detail.product_id),
+        quantity: detail.quantity,
+        price: detail.price,
+        discount: detail.discount || 0,
+      });
+    }
+
+    return savedOrder;
   }
 
   async get(dto: GetOrderDto): Promise<OrderEntity[]> {

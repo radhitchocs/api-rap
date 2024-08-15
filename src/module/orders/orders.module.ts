@@ -1,5 +1,5 @@
 // src/module/orders/orders.module.ts
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { OrdersController } from './controller/orders.controller';
@@ -8,6 +8,7 @@ import { OrderEntity, OrderSchema } from './schema/order.schema';
 import { CustomersModule } from '../customers/customers.module';
 import { UsersModule } from '../users/users.module';
 import { PaymentMethodsModule } from '../payment-methods/payment-methods.module';
+import { OrderDetailsModule } from '../order_details/order-details.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PaymentMethodsModule } from '../payment-methods/payment-methods.module'
     CustomersModule,
     UsersModule,
     PaymentMethodsModule,
+    forwardRef(() => OrderDetailsModule),
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

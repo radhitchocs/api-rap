@@ -6,5 +6,4 @@ export interface OrderDetailInterface {
   quantity: number;
   price: number;
   discount: number;
-  amount: number;
 }

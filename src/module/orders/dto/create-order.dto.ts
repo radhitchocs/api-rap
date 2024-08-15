@@ -31,11 +31,6 @@ export class OrderDetailDto {
   @IsNumber()
   @IsOptional()
   discount?: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  amount: number;
 }
 
 export class CreateOrderDto {
