@@ -6,13 +6,11 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 
 import { ResponseMessage } from 'src/decorator/response.decorator';
 import { OrderPointDetailsService } from '../service/order-point-details.service';
 import { CreateOrderPointDetailDto } from '../dto/create-order-point-detail.dto';
-import { GetOrderPointDetailDto } from '../dto/get-order-point-detail.dto';
 import { Types } from 'mongoose';
 
 @Controller('order-point-details')
@@ -23,8 +21,8 @@ export class OrderPointDetailsController {
 
   @Get()
   @ResponseMessage('Successfully retrieved order point details!')
-  async get(@Query() dto: GetOrderPointDetailDto) {
-    const result = await this.orderPointDetailsService.get(dto);
+  async get() {
+    const result = await this.orderPointDetailsService.get();
     return result;
   }
 

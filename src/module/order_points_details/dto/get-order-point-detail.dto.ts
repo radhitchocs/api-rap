@@ -1,20 +1,3 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
-import { Types } from 'mongoose';
+import { PaginationRequest } from 'src/module/generic/dto/pagination.dto';
 
-export class GetOrderPointDetailDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  order_id?: Types.ObjectId;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  product_id?: Types.ObjectId;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  points_earned?: number;
-}
+export class GetOrderPointDetailDto extends PaginationRequest {}
