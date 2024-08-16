@@ -1,15 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsObject } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsOptional, IsString } from 'class-validator';
 
 export class GetOrderPointDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsObject()
-  order_id?: Types.ObjectId;
+  @IsString()
+  order_id?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsObject()
-  customer_id?: Types.ObjectId;
+  @IsString()
+  customer_id?: string;
 }

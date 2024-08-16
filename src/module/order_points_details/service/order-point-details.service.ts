@@ -1,35 +1,63 @@
-import { Injectable } from '@nestjs/common';
+// src/module/order_points_details/service/order-point-details.service.ts
+
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginateModel, PaginateResult, Types } from 'mongoose';
-import { CreateOrderPointDetailDto } from '../dto/create-order-point-detail.dto';
+import { PaginateModel, Types } from 'mongoose';
 import { OrderPointDetailEntity } from '../schema/order-point-detail.schema';
-import { OrderPointDetailInterface } from '../interface/order-point-detail.interface';
+import { CreateOrderPointDetailDto } from '../dto/create-order-point-detail.dto';
+import { GetOrderPointDetailDto } from '../dto/get-order-point-detail.dto';
+import { ProductsService } from 'src/module/products/service/products.service';
+
 @Injectable()
 export class OrderPointDetailsService {
   constructor(
     @InjectModel(OrderPointDetailEntity.name)
-    private orderPointDetailModel: PaginateModel<OrderPointDetailEntity>,
+    private readonly orderPointDetailModel: PaginateModel<OrderPointDetailEntity>,
+    @Inject(forwardRef(() => ProductsService))
+    private readonly productsService: ProductsService,
   ) {}
-
-  async get(): Promise<PaginateResult<OrderPointDetailInterface>> {
-    const options = {
-      limit: 10,
-      sort: {
-        createdAt: -1,
-      },
-    };
-    return this.orderPointDetailModel.paginate({}, options);
-  }
-
-  async getById(id: Types.ObjectId): Promise<OrderPointDetailEntity> {
-    return this.orderPointDetailModel.findById(id).exec();
-  }
 
   async create(
     dto: CreateOrderPointDetailDto,
   ): Promise<OrderPointDetailEntity> {
-    const newOrderPointDetail = new this.orderPointDetailModel(dto);
+    const product = await this.productsService.getById(
+      new Types.ObjectId(dto.product_id),
+    );
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID "${dto.product_id}" not found`,
+      );
+    }
+
+    const newOrderPointDetail = new this.orderPointDetailModel({
+      order_point_id: new Types.ObjectId(dto.order_point_id),
+      product_id: new Types.ObjectId(dto.product_id),
+      points_earned: dto.points_earned,
+    });
+
     return newOrderPointDetail.save();
+  }
+
+  async get(dto: GetOrderPointDetailDto): Promise<OrderPointDetailEntity[]> {
+    const query: any = {};
+    if (dto.order_point_id) {
+      query['order_point_id'] = new Types.ObjectId(dto.order_point_id);
+    }
+
+    return this.orderPointDetailModel.find(query).exec();
+  }
+
+  async getByOrderPointId(
+    orderPointId: Types.ObjectId,
+  ): Promise<OrderPointDetailEntity[]> {
+    return this.orderPointDetailModel
+      .find({ order_point_id: orderPointId })
+      .exec();
   }
 
   async update(
@@ -38,19 +66,25 @@ export class OrderPointDetailsService {
   ): Promise<OrderPointDetailEntity> {
     const orderPointDetail = await this.orderPointDetailModel
       .findById(id)
-      .lean();
-
+      .exec();
     if (!orderPointDetail) {
-      throw new Error('Order point detail not found');
+      throw new NotFoundException(`OrderPointDetail with ID "${id}" not found`);
     }
 
-    return await this.orderPointDetailModel.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: dto,
-      },
-      { new: true },
-    );
+    if (dto.product_id) {
+      const product = await this.productsService.getById(
+        new Types.ObjectId(dto.product_id),
+      );
+      if (!product) {
+        throw new NotFoundException(
+          `Product with ID "${dto.product_id}" not found`,
+        );
+      }
+    }
+
+    return this.orderPointDetailModel
+      .findByIdAndUpdate(id, { $set: dto }, { new: true })
+      .exec();
   }
 
   async delete(id: Types.ObjectId): Promise<OrderPointDetailEntity> {

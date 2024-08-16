@@ -1,3 +1,9 @@
-import { PaginationRequest } from 'src/module/generic/dto/pagination.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-export class GetOrderPointDetailDto extends PaginationRequest {}
+export class GetOrderPointDetailDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  order_point_id?: string;
+}

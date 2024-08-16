@@ -19,17 +19,19 @@ export class OrderPointDetailsController {
     private readonly orderPointDetailsService: OrderPointDetailsService,
   ) {}
 
+  // Ubah method get:
   @Get()
   @ResponseMessage('Successfully retrieved order point details!')
   async get() {
-    const result = await this.orderPointDetailsService.get();
+    const result = await this.orderPointDetailsService.get({});
     return result;
   }
 
+  // Ubah method getById:
   @Get('/:id')
   @ResponseMessage('Successfully retrieved order point detail!')
   async getById(@Param('id') id: string) {
-    const result = await this.orderPointDetailsService.getById(
+    const result = await this.orderPointDetailsService.getByOrderPointId(
       new Types.ObjectId(id),
     );
     return result;

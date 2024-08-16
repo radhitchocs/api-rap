@@ -1,61 +1,115 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginateModel, PaginateResult, Types } from 'mongoose';
+import { PaginateModel, Types } from 'mongoose';
 import { OrderPointEntity } from '../schema/order_point.schema';
-
 import { CreateOrderPointDto } from '../dto/create-order_point.dto';
 import { GetOrderPointDto } from '../dto/get-order_point.dto';
+import { OrdersService } from 'src/module/orders/service/orders.service';
+import { CustomersService } from 'src/module/customers/service/customers.service';
+import { OrderPointDetailsService } from 'src/module/order_points_details/service/order-point-details.service';
 
 @Injectable()
 export class OrderPointsService {
   constructor(
     @InjectModel(OrderPointEntity.name)
-    private orderPointModel: PaginateModel<OrderPointEntity>,
+    private readonly orderPointModel: PaginateModel<OrderPointEntity>,
+    private readonly ordersService: OrdersService,
+    private readonly customersService: CustomersService,
+    private readonly orderPointDetailsService: OrderPointDetailsService,
   ) {}
 
-  async get(dto: GetOrderPointDto): Promise<PaginateResult<OrderPointEntity>> {
-    const { order_id, customer_id } = dto;
-    const filter: any = {};
-    if (order_id) filter.order_id = order_id;
-    if (customer_id) filter.customer_id = customer_id;
+  async create(dto: CreateOrderPointDto): Promise<OrderPointEntity> {
+    const order = await this.ordersService.getById(
+      new Types.ObjectId(dto.order_id),
+    );
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${dto.order_id}" not found`);
+    }
 
-    return this.orderPointModel.paginate(filter, {
-      sort: { created_at: -1 },
-      limit: 10,
+    const customer = await this.customersService.getById(
+      new Types.ObjectId(dto.customer_id),
+    );
+    if (!customer) {
+      throw new NotFoundException(
+        `Customer with ID "${dto.customer_id}" not found`,
+      );
+    }
+
+    const newOrderPoint = new this.orderPointModel({
+      order_id: new Types.ObjectId(dto.order_id),
+      customer_id: new Types.ObjectId(dto.customer_id),
+      total_points_earned: dto.total_points_earned,
+      created_at: dto.created_at,
     });
+
+    const savedOrderPoint = await newOrderPoint.save();
+
+    // Create order point details automatically
+    for (const detail of dto.order_point_details) {
+      await this.orderPointDetailsService.create({
+        order_point_id: savedOrderPoint._id as Types.ObjectId,
+        product_id: new Types.ObjectId(detail.product_id),
+        points_earned: detail.points_earned,
+      });
+    }
+
+    return savedOrderPoint;
   }
 
-  async getById(id: Types.ObjectId): Promise<OrderPointEntity> {
+  async get(dto: GetOrderPointDto): Promise<OrderPointEntity[]> {
+    const { order_id, customer_id } = dto;
+    const filter: any = {};
+    if (order_id) filter.order_id = new Types.ObjectId(order_id);
+    if (customer_id) filter.customer_id = new Types.ObjectId(customer_id);
+
+    return this.orderPointModel.find(filter).exec();
+  }
+
+  async getById(id: string): Promise<OrderPointEntity> {
     return this.orderPointModel.findById(id).exec();
   }
 
-  async create(dto: CreateOrderPointDto): Promise<OrderPointEntity> {
-    const newOrderPoint = new this.orderPointModel(dto);
-    return newOrderPoint.save();
-  }
-
   async update(
-    id: Types.ObjectId,
+    id: string,
     dto: CreateOrderPointDto,
   ): Promise<OrderPointEntity> {
-    const product = await this.orderPointModel.findById(id).exec();
-
-    if (!product) {
-      throw new Error('Order point not found');
+    const orderPoint = await this.orderPointModel.findById(id).exec();
+    if (!orderPoint) {
+      throw new NotFoundException(`OrderPoint with ID "${id}" not found`);
     }
 
-    return await this.orderPointModel.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: dto,
-      },
+    if (dto.order_id) {
+      const order = await this.ordersService.getById(
+        new Types.ObjectId(dto.order_id),
+      );
+      if (!order) {
+        throw new NotFoundException(
+          `Order with ID "${dto.order_id}" not found`,
+        );
+      }
+    }
+
+    if (dto.customer_id) {
+      const customer = await this.customersService.getById(
+        new Types.ObjectId(dto.customer_id),
+      );
+      if (!customer) {
+        throw new NotFoundException(
+          `Customer with ID "${dto.customer_id}" not found`,
+        );
+      }
+    }
+
+    return await this.orderPointModel.findByIdAndUpdate(
+      id,
+      { $set: dto },
       { new: true },
     );
   }
 
-  async delete(id: Types.ObjectId): Promise<OrderPointEntity> {
+  async delete(id: string): Promise<OrderPointEntity> {
     return await this.orderPointModel.findByIdAndUpdate(
-      { _id: id },
+      id,
       {
         $set: {
           deleted: true,

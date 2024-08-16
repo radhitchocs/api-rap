@@ -1,15 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsNumber, IsObject } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateOrderPointDto {
   @ApiProperty()
-  @IsObject()
-  order_id: Types.ObjectId;
+  @IsString()
+  order_id: string;
 
   @ApiProperty()
-  @IsObject()
-  customer_id: Types.ObjectId;
+  @IsString()
+  customer_id: string;
 
   @ApiProperty()
   @IsNumber()
@@ -22,7 +21,7 @@ export class CreateOrderPointDto {
   @ApiProperty()
   @IsNotEmpty()
   order_point_details: {
-    product_id: Types.ObjectId;
+    product_id: string;
     points_earned: number;
   }[];
 }
