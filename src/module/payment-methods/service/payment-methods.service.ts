@@ -1,21 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { PaginateResult, Types } from 'mongoose';
 import { PaymentMethodEntity } from '../schema/payment-method.schema';
 import { CreatePaymentMethodDto } from '../dto/create-payment-method.dto';
-import { GetPaymentMethodDto } from '../dto/get-payment-method.dto';
-
+import { PaginateModel } from 'mongoose';
+import { PaymentMethodInterface } from '../interface/payment-methods.interface';
 @Injectable()
 export class PaymentMethodsService {
   constructor(
     @InjectModel(PaymentMethodEntity.name)
-    private paymentMethodModel: Model<PaymentMethodEntity>,
+    private paymentMethodModel: PaginateModel<PaymentMethodEntity>,
   ) {}
 
-  async get(dto: GetPaymentMethodDto) {
-    const { search } = dto;
-    const query = search ? { name: new RegExp(search, 'i') } : {};
-    return this.paymentMethodModel.find(query).exec();
+  async get(): Promise<PaginateResult<PaymentMethodInterface>> {
+    const options = {
+      limit: 10,
+      sort: {
+        createdAt: -1,
+      },
+    };
+    return this.paymentMethodModel.paginate({}, options);
   }
 
   async create(dto: CreatePaymentMethodDto): Promise<PaymentMethodEntity> {

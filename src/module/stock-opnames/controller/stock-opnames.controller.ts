@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Param,
   Patch,
   Delete,
@@ -12,7 +11,6 @@ import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/decorator/response.decorator';
 
 import { CreateStockOpnameDto } from '../dto/create-stock-opname.dto';
-import { GetStockOpnameDto } from '../dto/get-stock-opname.dto';
 import { StockOpnamesService } from '../service/stock-opnames.service';
 
 @Controller('stock-opnames')
@@ -21,8 +19,8 @@ export class StockOpnamesController {
 
   @Get()
   @ResponseMessage('Successfully retrieved stock opnames!')
-  async get(@Query() dto: GetStockOpnameDto) {
-    const result = await this.stockOpnamesService.get(dto);
+  async get() {
+    const result = await this.stockOpnamesService.get();
     return result;
   }
 

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 @Schema({
   collection: 'order_points',
@@ -26,3 +27,5 @@ export class OrderPointEntity extends Document {
 }
 
 export const OrderPointSchema = SchemaFactory.createForClass(OrderPointEntity);
+
+OrderPointSchema.plugin(mongoosePaginate);

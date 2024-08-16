@@ -4,7 +4,6 @@ import {
   Get,
   Post,
   Param,
-  Query,
   Patch,
   Delete,
 } from '@nestjs/common';
@@ -12,7 +11,6 @@ import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/decorator/response.decorator';
 import { OrderDetailsService } from '../service/order-details.service';
 import { CreateOrderDetailDto } from '../dto/create-order-detail.dto';
-import { GetOrderDetailDto } from '../dto/get-order-detail.dto';
 
 @Controller('order-details')
 export class OrderDetailsController {
@@ -20,8 +18,8 @@ export class OrderDetailsController {
 
   @Get()
   @ResponseMessage('Successfully retrieved order details!')
-  async get(@Query() dto: GetOrderDetailDto) {
-    const result = await this.orderDetailsService.get(dto);
+  async get() {
+    const result = await this.orderDetailsService.get();
     return result;
   }
 

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { PaginateModel, PaginateResult, Types } from 'mongoose';
 
 import { CreateProductDto } from '../dto/create-product.dto';
-import { GetProductDto } from '../dto/get-product.dto';
+
 import { ProductInterface } from '../interface/product.interface';
 import { ProductEntity } from '../schema/product.schema';
 
@@ -11,7 +11,7 @@ import { ProductEntity } from '../schema/product.schema';
 export class ProductsService {
   constructor(
     @InjectModel(ProductEntity.name)
-    private productModel: Model<ProductInterface>,
+    private productModel: PaginateModel<ProductInterface>,
   ) {}
 
   async create(dto: CreateProductDto): Promise<ProductInterface> {
@@ -19,8 +19,15 @@ export class ProductsService {
     return newProduct.save();
   }
 
-  async get(dto: GetProductDto): Promise<ProductInterface[]> {
-    return this.productModel.find(dto).exec();
+  async get(): Promise<PaginateResult<ProductInterface>> {
+    const options = {
+      limit: 10,
+      sort: {
+        createdAt: -1,
+      },
+    };
+
+    return this.productModel.paginate({}, options);
   }
 
   async getById(productId: Types.ObjectId): Promise<ProductInterface> {

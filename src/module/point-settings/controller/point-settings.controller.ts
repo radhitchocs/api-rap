@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Param,
   Patch,
   Delete,
@@ -13,7 +12,6 @@ import { ResponseMessage } from 'src/decorator/response.decorator';
 import { PointSettingsService } from '../service/point-settings.service';
 import { CreatePointSettingsDto } from '../dto/create-point-settings.dto';
 import { Types } from 'mongoose';
-import { PointSettingsEntity } from '../schema/point-settings.schema';
 
 @Controller('point-settings')
 export class PointSettingsController {
@@ -21,8 +19,8 @@ export class PointSettingsController {
 
   @Get()
   @ResponseMessage('Successfully retrieved point settings!')
-  async get(@Query() dto: PointSettingsEntity) {
-    const result = await this.pointSettingsService.get(dto);
+  async get() {
+    const result = await this.pointSettingsService.get();
     return result;
   }
 

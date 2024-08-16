@@ -6,20 +6,19 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { PaginateResult, Types, PaginateModel } from 'mongoose';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderEntity } from '../schema/order.schema';
 import { CustomersService } from 'src/module/customers/service/customers.service';
 import { UserService } from 'src/module/users/service/users.service';
 import { PaymentMethodsService } from 'src/module/payment-methods/service/payment-methods.service';
 import { OrderDetailsService } from 'src/module/order_details/service/order-details.service';
-import { GetOrderDto } from '../dto/get-order.dto';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(OrderEntity.name)
-    private readonly orderModel: Model<OrderEntity>,
+    private readonly orderModel: PaginateModel<OrderEntity>,
     private readonly customersService: CustomersService,
     private readonly userService: UserService,
     private readonly paymentMethodsService: PaymentMethodsService,
@@ -77,13 +76,15 @@ export class OrdersService {
     return savedOrder;
   }
 
-  async get(dto: GetOrderDto): Promise<OrderEntity[]> {
-    const { page = 1, limit = 10, ...filters } = dto;
-    return this.orderModel
-      .find(filters)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
+  async get(): Promise<PaginateResult<OrderEntity>> {
+    const options = {
+      limit: 10,
+      sort: {
+        createdAt: -1,
+      },
+    };
+
+    return this.orderModel.paginate({}, options);
   }
 
   async getById(orderId: Types.ObjectId): Promise<OrderEntity | null> {

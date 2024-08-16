@@ -23,7 +23,7 @@ export class OrderPointDetailsController {
   @Get()
   @ResponseMessage('Successfully retrieved order point details!')
   async get() {
-    const result = await this.orderPointDetailsService.get({});
+    const result = await this.orderPointDetailsService.get();
     return result;
   }
 

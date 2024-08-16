@@ -15,7 +15,6 @@ import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/decorator/response.decorator';
 
 import { CreateProductDto } from '../dto/create-product.dto';
-import { GetProductDto } from '../dto/get-product.dto';
 import { ProductsService } from '../service/products.service';
 import { ProductInterface } from '../interface/product.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,8 +26,8 @@ export class ProductsController {
 
   @Get()
   @ResponseMessage('Successfully fetched products!')
-  async get(@Query() dto: GetProductDto) {
-    const result = await this.productsService.get(dto);
+  async get() {
+    const result = await this.productsService.get();
     return result;
   }
 

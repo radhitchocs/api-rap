@@ -2,6 +2,7 @@
 import { Types } from 'mongoose';
 
 export interface OrderInterface {
+  _id: Types.ObjectId;
   customerId: Types.ObjectId;
   userId: Types.ObjectId;
   paymentMethodId: Types.ObjectId;

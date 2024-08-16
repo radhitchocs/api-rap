@@ -12,11 +12,9 @@ export class PointSettingsService {
     private pointSettingsModel: PaginateModel<PointSettingsEntity>,
   ) {}
 
-  async get(dto: any): Promise<PaginateResult<PointSettingsEntity>> {
-    const { page, limit } = dto;
+  async get(): Promise<PaginateResult<PointSettingsEntity>> {
     const options = {
-      page,
-      limit: limit || 10,
+      limit: 10,
       sort: {
         createdAt: -1,
       },

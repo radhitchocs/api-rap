@@ -2,6 +2,7 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 @Schema({
   collection: 'point_settings',
@@ -17,3 +18,5 @@ export class PointSettingsEntity extends Document {
 
 export const PointSettingsSchema =
   SchemaFactory.createForClass(PointSettingsEntity);
+
+PointSettingsSchema.plugin(mongoosePaginate);

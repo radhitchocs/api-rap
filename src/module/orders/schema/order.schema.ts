@@ -1,7 +1,7 @@
 // src/module/orders/schema/order.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-
+import * as mongoosePaginate from 'mongoose-paginate-v2';
 @Schema({
   collection: 'orders',
   timestamps: true,
@@ -46,3 +46,5 @@ export class OrderEntity extends Document {
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderEntity);
+
+OrderSchema.plugin(mongoosePaginate);

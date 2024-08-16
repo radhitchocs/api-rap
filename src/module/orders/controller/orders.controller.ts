@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Param,
   Patch,
   Delete,
@@ -12,7 +11,6 @@ import {
 import { Types } from 'mongoose';
 
 import { CreateOrderDto } from '../dto/create-order.dto';
-import { GetOrderDto } from '../dto/get-order.dto';
 import { OrdersService } from '../service/orders.service';
 import { ResponseMessage } from 'src/decorator/response.decorator';
 
@@ -28,8 +26,8 @@ export class OrdersController {
 
   @Get()
   @ResponseMessage('Get orders successfully')
-  async get(@Query() dto: GetOrderDto) {
-    const result = await this.ordersService.get(dto);
+  async get() {
+    const result = await this.ordersService.get();
     return result;
   }
 

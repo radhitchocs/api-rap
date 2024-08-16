@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginateModel, Types } from 'mongoose';
+import { PaginateModel, PaginateResult, Types } from 'mongoose';
 import { OrderDetailEntity } from '../schema/order-detail.schema';
 import { CreateOrderDetailDto } from '../dto/create-order-detail.dto';
-import { GetOrderDetailDto } from '../dto/get-order-detail.dto';
 import { OrdersService } from 'src/module/orders/service/orders.service';
 import { ProductsService } from 'src/module/products/service/products.service';
 
@@ -40,13 +39,15 @@ export class OrderDetailsService {
     return newOrderDetail.save();
   }
 
-  async get(dto: GetOrderDetailDto): Promise<OrderDetailEntity[]> {
-    const query = {};
-    if (dto.orderId) {
-      query['orderId'] = dto.orderId;
-    }
+  async get(): Promise<PaginateResult<OrderDetailEntity>> {
+    const options = {
+      limit: 10,
+      sort: {
+        createdAt: -1,
+      },
+    };
 
-    return this.orderDetailModel.find(query).exec();
+    return this.orderDetailModel.paginate({}, options);
   }
 
   async getByOrderId(orderId: Types.ObjectId): Promise<OrderDetailEntity[]> {

@@ -6,11 +6,9 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import { ResponseMessage } from 'src/decorator/response.decorator';
 import { CreateOrderPointDto } from '../dto/create-order_point.dto';
-import { GetOrderPointDto } from '../dto/get-order_point.dto';
 import { OrderPointsService } from '../service/order_points.service';
 
 @Controller('order-points')
@@ -19,8 +17,8 @@ export class OrderPointsController {
 
   @Get()
   @ResponseMessage('Successfully retrieved order points!')
-  async get(@Query() dto: GetOrderPointDto) {
-    const result = await this.orderPointsService.get(dto);
+  async get() {
+    const result = await this.orderPointsService.get();
     return result;
   }
 

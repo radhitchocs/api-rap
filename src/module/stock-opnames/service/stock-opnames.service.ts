@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult, Types } from 'mongoose';
 import { CreateStockOpnameDto } from '../dto/create-stock-opname.dto';
-import { GetStockOpnameDto } from '../dto/get-stock-opname.dto';
 import { StockOpnameEntity } from '../schema/stock-opname.schema';
 
 @Injectable()
@@ -17,18 +16,14 @@ export class StockOpnamesService {
     return newStockOpname.save();
   }
 
-  async get(
-    dto: GetStockOpnameDto,
-  ): Promise<PaginateResult<StockOpnameEntity>> {
-    const { page, limit, warehouse } = dto;
+  async get(): Promise<PaginateResult<StockOpnameEntity>> {
     const options = {
-      page,
-      limit: limit || 10,
-      sort: { created_at: -1 },
+      limit: 10,
+      sort: {
+        created_at: -1,
+      },
     };
-
-    const query = warehouse ? { warehouse } : {};
-    return this.stockOpnameModel.paginate(query, options);
+    return this.stockOpnameModel.paginate({}, options);
   }
 
   async getById(id: Types.ObjectId): Promise<StockOpnameEntity> {
