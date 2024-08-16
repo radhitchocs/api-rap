@@ -1,20 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult, Types } from 'mongoose';
-
 import { CreateProductDto } from '../dto/create-product.dto';
-
 import { ProductInterface } from '../interface/product.interface';
 import { ProductEntity } from '../schema/product.schema';
+import { UserService } from 'src/module/users/service/users.service'; // Import the UsersService
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel(ProductEntity.name)
     private productModel: PaginateModel<ProductInterface>,
+    private readonly usersService: UserService, // Inject the UsersService
   ) {}
 
   async create(dto: CreateProductDto): Promise<ProductInterface> {
+    if (dto.user_id) {
+      const user = await this.usersService.findById(dto.user_id);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+    }
+
     const newProduct = new this.productModel(dto);
     return newProduct.save();
   }
@@ -38,6 +45,13 @@ export class ProductsService {
     productId: Types.ObjectId,
     dto: CreateProductDto,
   ): Promise<ProductInterface> {
+    if (dto.user_id) {
+      const user = await this.usersService.findById(dto.user_id);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+    }
+
     const product = await this.productModel.findById(productId).lean();
 
     if (!product) {
@@ -58,8 +72,7 @@ export class ProductsService {
       { _id: productId },
       {
         $set: {
-          deleted: true,
-          deletedAt: new Date(),
+          is_active: false,
         },
       },
       { new: true },

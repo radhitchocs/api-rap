@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 @Schema({
@@ -26,10 +26,19 @@ export class ProductEntity extends Document {
   sell_price: number;
 
   @Prop()
-  promo?: string; // Adjust the type based on your actual data
+  promo?: number;
 
   @Prop()
   loyalty_points: number;
+
+  @Prop({ default: false })
+  is_promo?: boolean;
+
+  @Prop({ default: true })
+  is_active?: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  user_id?: Types.ObjectId;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(ProductEntity);

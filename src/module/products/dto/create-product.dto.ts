@@ -4,10 +4,13 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsBoolean,
   MaxLength,
+  IsMongoId,
 } from 'class-validator';
-
 import { Type } from 'class-transformer';
+import { Types } from 'mongoose';
+
 export class CreateProductDto {
   @ApiProperty()
   @IsString()
@@ -21,7 +24,9 @@ export class CreateProductDto {
   description: string;
 
   @ApiProperty()
-  image: string;
+  @IsString()
+  @IsOptional()
+  image?: string;
 
   @ApiProperty()
   @IsNumber()
@@ -43,14 +48,28 @@ export class CreateProductDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  promo?: {
-    is_promo: boolean;
-    promo_price: number;
-  };
+  @IsNumber()
+  @Type(() => Number)
+  promo?: number;
 
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
   loyalty_points: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  is_promo?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsMongoId()
+  user_id?: Types.ObjectId;
 }

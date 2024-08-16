@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Controller,
   Get,
   Post,
-  Query,
   Param,
   UploadedFile,
   UseInterceptors,
@@ -13,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/decorator/response.decorator';
-
 import { CreateProductDto } from '../dto/create-product.dto';
 import { ProductsService } from '../service/products.service';
 import { ProductInterface } from '../interface/product.interface';
@@ -56,7 +53,7 @@ export class ProductsController {
   ): Promise<ProductInterface> {
     const result = await this.productsService.create({
       ...dto,
-      image: file.filename,
+      image: file ? file.filename : undefined,
     });
     return result;
   }
