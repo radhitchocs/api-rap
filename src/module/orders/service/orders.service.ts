@@ -1,9 +1,8 @@
-// src/module/orders/service/orders.service.ts
 import {
   forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
-  Inject,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateResult, Types, PaginateModel } from 'mongoose';
@@ -54,8 +53,12 @@ export class OrdersService {
       customer_id: new Types.ObjectId(dto.customer_id),
       user_id: new Types.ObjectId(dto.user_id),
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
+      proof_payment: dto.proof_payment,
+      get_point: dto.get_point || 0,
       total: dto.total,
-      payment_status: dto.payment_status,
+      pay: dto.pay,
+      change: dto.change || dto.pay - dto.total,
+      note: dto.note,
     });
 
     const savedOrder = (await newOrder.save()) as OrderEntity & {
@@ -65,7 +68,7 @@ export class OrdersService {
     // Create order details automatically
     for (const detail of dto.order_details) {
       await this.orderDetailsService.create({
-        orderId: savedOrder._id, // No need to wrap in new Types.ObjectId, it's already the correct type
+        orderId: savedOrder._id,
         productId: new Types.ObjectId(detail.product_id),
         quantity: detail.quantity,
         price: detail.price,
@@ -76,11 +79,26 @@ export class OrdersService {
     return savedOrder;
   }
 
+  async approveOrder(orderId: Types.ObjectId): Promise<OrderEntity> {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    return order.save();
+  }
+
+  async cancelOrder(orderId: Types.ObjectId): Promise<OrderEntity> {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    return order.save();
+  }
   async get(): Promise<PaginateResult<OrderEntity>> {
     const options = {
       limit: 10,
       sort: {
-        createdAt: -1,
+        cdate: -1,
       },
     };
 
@@ -89,22 +107,6 @@ export class OrdersService {
 
   async getById(orderId: Types.ObjectId): Promise<OrderEntity | null> {
     return this.orderModel.findById(orderId).exec();
-  }
-
-  async approveOrder(orderId: Types.ObjectId): Promise<OrderEntity | null> {
-    return this.orderModel
-      .findByIdAndUpdate(orderId, { payment_status: 'approved' }, { new: true })
-      .exec();
-  }
-
-  async cancelOrder(orderId: Types.ObjectId): Promise<OrderEntity | null> {
-    return this.orderModel
-      .findByIdAndUpdate(
-        orderId,
-        { payment_status: 'cancelled' },
-        { new: true },
-      )
-      .exec();
   }
 
   async update(
@@ -125,7 +127,6 @@ export class OrdersService {
           `Customer with ID "${dto.customer_id}" not found`,
         );
       }
-      // We keep dto.customer_id as is, since it's already a string
     }
 
     if (dto.user_id) {
@@ -133,7 +134,6 @@ export class OrdersService {
       if (!user) {
         throw new NotFoundException(`User with ID "${dto.user_id}" not found`);
       }
-      // We keep dto.user_id as is, since it's already a string
     }
 
     if (dto.payment_method_id) {
@@ -145,7 +145,6 @@ export class OrdersService {
           `Payment method with ID "${dto.payment_method_id}" not found`,
         );
       }
-      // We keep dto.payment_method_id as is, since it's already a string
     }
 
     return await this.orderModel.findOneAndUpdate(
@@ -156,15 +155,10 @@ export class OrdersService {
   }
 
   async delete(orderId: Types.ObjectId) {
-    return await this.orderModel.findByIdAndUpdate(
-      { _id: orderId },
-      {
-        $set: {
-          deleted: true,
-          deletedAt: new Date(),
-        },
-      },
-      { new: true },
-    );
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    return order.deleteOne();
   }
 }

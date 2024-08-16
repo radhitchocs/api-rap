@@ -50,24 +50,41 @@ export class CreateOrderDto {
   payment_method_id: string;
 
   @ApiProperty()
+  @IsOptional()
+  proof_payment?: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  get_point?: number;
+
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  @Type(() => Number)
   total: number;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  payment_status: string;
+  @Type(() => Number)
+  pay: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  change?: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  note?: string;
 
   @ApiProperty({ type: [OrderDetailDto] })
   @ValidateNested({ each: true })
   @Type(() => OrderDetailDto)
   @IsArray()
-  @IsNotEmpty()
-  order_details: OrderDetailDto[];
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  created_at?: string;
+  order_details?: OrderDetailDto[];
 }

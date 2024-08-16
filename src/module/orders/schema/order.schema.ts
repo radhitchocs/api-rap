@@ -2,6 +2,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
+
 @Schema({
   collection: 'orders',
   timestamps: true,
@@ -17,10 +18,22 @@ export class OrderEntity extends Document {
   payment_method_id: Types.ObjectId;
 
   @Prop()
+  proof_payment: string;
+
+  @Prop()
+  get_point: number;
+
+  @Prop()
   total: number;
 
   @Prop()
-  payment_status: string;
+  pay: number;
+
+  @Prop()
+  change: number;
+
+  @Prop()
+  note: string;
 
   @Prop({
     type: [
@@ -40,11 +53,7 @@ export class OrderEntity extends Document {
     discount?: number;
     amount: number;
   }[];
-
-  @Prop({ default: Date.now })
-  created_at: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderEntity);
-
 OrderSchema.plugin(mongoosePaginate);

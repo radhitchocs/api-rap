@@ -7,20 +7,40 @@ import {
   Param,
   Patch,
   Delete,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrdersService } from '../service/orders.service';
 import { ResponseMessage } from 'src/decorator/response.decorator';
+import { storage, validateFileExtension } from 'src/config/storage.config';
+import { OrderEntity } from '../schema/order.schema';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  async create(@Body() dto: CreateOrderDto) {
-    const result = await this.ordersService.create(dto);
+  @UseInterceptors(
+    FileInterceptor('proof_payment', {
+      storage,
+      fileFilter: (req, file, callback) => {
+        validateFileExtension(req, file, callback)(['.jpg', '.png', '.jpeg']);
+      },
+    }),
+  )
+  @ResponseMessage('Create order successfully')
+  async create(
+    @Body() dto: CreateOrderDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<OrderEntity> {
+    const result = await this.ordersService.create({
+      ...dto,
+      proof_payment: file.filename,
+    });
     return result;
   }
 
@@ -53,9 +73,24 @@ export class OrdersController {
   }
 
   @Patch('/:orderId')
+  @UseInterceptors(
+    FileInterceptor('proof_payment', {
+      storage,
+      fileFilter: (req, file, callback) => {
+        validateFileExtension(req, file, callback)(['.jpg', '.png', '.jpeg']);
+      },
+    }),
+  )
   @ResponseMessage('Update order successfully')
-  async update(@Param('orderId') orderId: string, @Body() dto: CreateOrderDto) {
-    const updateData = { ...dto };
+  async update(
+    @Param('orderId') orderId: string,
+    @Body() dto: CreateOrderDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const updateData = {
+      ...dto,
+      proof_payment: file ? file.filename : undefined,
+    };
 
     return this.ordersService.update(new Types.ObjectId(orderId), updateData);
   }
