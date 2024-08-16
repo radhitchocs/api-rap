@@ -7,12 +7,16 @@ import {
   StockOpnameSchema,
 } from './schema/stock-opname.schema';
 import { StockOpnamesService } from './service/stock-opnames.service';
+import { ProductsModule } from '../products/products.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: StockOpnameEntity.name, schema: StockOpnameSchema },
     ]),
+    ProductsModule,
+    UsersModule,
   ],
   controllers: [StockOpnamesController],
   providers: [StockOpnamesService],

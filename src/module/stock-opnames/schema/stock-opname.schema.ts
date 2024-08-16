@@ -14,7 +14,7 @@ export class StockOpnameEntity extends Document {
   warehouse: string;
 
   @Prop()
-  available_quantity: number;
+  available: number;
 
   @Prop()
   difference: number;
@@ -26,16 +26,16 @@ export class StockOpnameEntity extends Document {
   note?: string;
 
   @Prop()
-  created_at: Date;
-
-  @Prop()
   batch_code: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop()
   user_id: Types.ObjectId;
 
   @Prop({ default: true })
   is_active: boolean;
+
+  @Prop({ default: 0 })
+  with_update: number; // Default value should be 0 if not provided
 }
 
 const StockOpnameSchema = SchemaFactory.createForClass(StockOpnameEntity);

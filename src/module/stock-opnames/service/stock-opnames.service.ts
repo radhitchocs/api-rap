@@ -1,18 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult, Types } from 'mongoose';
 import { CreateStockOpnameDto } from '../dto/create-stock-opname.dto';
 import { StockOpnameEntity } from '../schema/stock-opname.schema';
+import { ProductsService } from 'src/module/products/service/products.service';
+import { UserService } from 'src/module/users/service/users.service';
 
 @Injectable()
 export class StockOpnamesService {
   constructor(
     @InjectModel(StockOpnameEntity.name)
     private readonly stockOpnameModel: PaginateModel<StockOpnameEntity>,
+    private readonly productsService: ProductsService,
+    private readonly userService: UserService,
   ) {}
 
   async create(dto: CreateStockOpnameDto): Promise<StockOpnameEntity> {
-    const newStockOpname = new this.stockOpnameModel(dto);
+    const product = await this.productsService.getById(
+      new Types.ObjectId(dto.product_id),
+    );
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID "${dto.product_id}" not found`,
+      );
+    }
+
+    const user = await this.userService.getUser(dto.user_id);
+    if (!user) {
+      throw new NotFoundException(`User with ID "${dto.user_id}" not found`);
+    }
+
+    const newStockOpname = new this.stockOpnameModel({
+      ...dto,
+      product_id: new Types.ObjectId(dto.product_id),
+      user_id: new Types.ObjectId(dto.user_id),
+    });
     return newStockOpname.save();
   }
 

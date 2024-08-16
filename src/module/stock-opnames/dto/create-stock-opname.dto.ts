@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsOptional,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateStockOpnameDto {
@@ -21,7 +15,7 @@ export class CreateStockOpnameDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  available_quantity: number;
+  available: number;
 
   @ApiProperty()
   @IsNumber()
@@ -39,20 +33,20 @@ export class CreateStockOpnameDto {
   note?: string;
 
   @ApiProperty()
-  @IsDateString()
-  @IsNotEmpty()
-  created_at: Date;
-
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   batch_code: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  user_id: Types.ObjectId;
+  user_id: string;
 
   @ApiProperty()
   @IsOptional()
   is_active?: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  with_update?: number; // Default value should be 0 if not provided
 }
