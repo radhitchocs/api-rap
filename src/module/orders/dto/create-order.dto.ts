@@ -5,39 +5,21 @@ import {
   IsNumber,
   IsString,
   IsOptional,
-  IsArray,
-  ValidateNested,
   IsMongoId,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-
-export class OrderDetailDto {
-  @ApiProperty()
-  @IsMongoId()
-  @IsNotEmpty()
-  product_id: string;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  quantity: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  price: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  discount?: number;
-}
+import { Types } from 'mongoose';
 
 export class CreateOrderDto {
   @ApiProperty()
   @IsMongoId()
   @IsNotEmpty()
   customer_id: string;
+
+  @ApiProperty()
+  @IsMongoId()
+  @IsNotEmpty()
+  product_id: Types.ObjectId;
 
   @ApiProperty()
   @IsMongoId()
@@ -81,10 +63,4 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   note?: string;
-
-  @ApiProperty({ type: [OrderDetailDto] })
-  @ValidateNested({ each: true })
-  @Type(() => OrderDetailDto)
-  @IsArray()
-  order_details?: OrderDetailDto[];
 }

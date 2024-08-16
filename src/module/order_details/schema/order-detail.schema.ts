@@ -8,25 +8,30 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
 })
 export class OrderDetailEntity extends Document {
   @Prop({ type: Types.ObjectId, required: true, ref: 'Order' })
-  orderId: Types.ObjectId;
+  order_id: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, required: true, ref: 'Product' })
-  productId: Types.ObjectId;
+  product_id: Types.ObjectId;
 
   @Prop({ required: true })
-  quantity: number;
+  buy: number; // harga beli
 
   @Prop({ required: true })
-  price: number;
+  qty: number;
 
   @Prop({ required: true })
-  discount: number;
+  price: number; // harga jual
 
   @Prop({ required: true })
-  amount: number;
+  disc: number; // diskon
+
+  @Prop({ required: true })
+  amount: number; // total harga setelah diskon
+
+  @Prop({ required: true })
+  profit: number; // laba
 }
 
 export const OrderDetailSchema =
   SchemaFactory.createForClass(OrderDetailEntity);
-
 OrderDetailSchema.plugin(mongoosePaginate);

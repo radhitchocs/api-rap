@@ -9,6 +9,7 @@ import { CustomersModule } from '../customers/customers.module';
 import { UsersModule } from '../users/users.module';
 import { PaymentMethodsModule } from '../payment-methods/payment-methods.module';
 import { OrderDetailsModule } from '../order_details/order-details.module';
+import { ProductsModule } from '../products/products.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { OrderDetailsModule } from '../order_details/order-details.module';
     UsersModule,
     PaymentMethodsModule,
     forwardRef(() => OrderDetailsModule),
+    ProductsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

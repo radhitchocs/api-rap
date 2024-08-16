@@ -17,23 +17,26 @@ export class OrderDetailsService {
 
   async create(dto: CreateOrderDetailDto): Promise<OrderDetailEntity> {
     const product = await this.productsService.getById(
-      new Types.ObjectId(dto.productId),
+      new Types.ObjectId(dto.product_id),
     );
     if (!product) {
       throw new NotFoundException(
-        `Product with ID "${dto.productId}" not found`,
+        `Product with ID "${dto.product_id}" not found`,
       );
     }
 
-    const amount = dto.price * dto.quantity - dto.discount;
+    const amount = dto.price * dto.qty - dto.disc;
+    const profit = dto.price - product.buy_price;
 
     const newOrderDetail = new this.orderDetailModel({
-      orderId: dto.orderId,
-      productId: dto.productId,
-      quantity: dto.quantity,
+      order_id: dto.order_id,
+      product_id: dto.product_id,
+      buy: product.buy_price,
+      qty: dto.qty,
       price: dto.price,
-      discount: dto.discount,
+      disc: dto.disc,
       amount: amount,
+      profit: profit,
     });
 
     return newOrderDetail.save();
@@ -50,8 +53,8 @@ export class OrderDetailsService {
     return this.orderDetailModel.paginate({}, options);
   }
 
-  async getByOrderId(orderId: Types.ObjectId): Promise<OrderDetailEntity[]> {
-    return this.orderDetailModel.find({ orderId }).exec();
+  async getByOrderId(order_id: Types.ObjectId): Promise<OrderDetailEntity[]> {
+    return this.orderDetailModel.find({ order_id }).exec();
   }
 
   async update(
@@ -63,27 +66,37 @@ export class OrderDetailsService {
       throw new NotFoundException(`OrderDetail with ID "${id}" not found`);
     }
 
-    if (dto.orderId) {
+    if (dto.order_id) {
       const order = await this.ordersService.getById(
-        new Types.ObjectId(dto.orderId),
+        new Types.ObjectId(dto.order_id),
       );
       if (!order) {
-        throw new NotFoundException(`Order with ID "${dto.orderId}" not found`);
-      }
-    }
-
-    if (dto.productId) {
-      const product = await this.productsService.getById(
-        new Types.ObjectId(dto.productId),
-      );
-      if (!product) {
         throw new NotFoundException(
-          `Product with ID "${dto.productId}" not found`,
+          `Order with ID "${dto.order_id}" not found`,
         );
       }
     }
 
-    const amount = (dto.price - dto.discount) * dto.quantity;
+    if (dto.product_id) {
+      const product = await this.productsService.getById(
+        new Types.ObjectId(dto.product_id),
+      );
+      if (!product) {
+        throw new NotFoundException(
+          `Product with ID "${dto.product_id}" not found`,
+        );
+      }
+    }
+    const product = await this.productsService.getById(
+      new Types.ObjectId(dto.product_id),
+    );
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID "${dto.product_id}" not found`,
+      );
+    }
+    const amount = dto.price * dto.qty - dto.disc;
+    const profit = dto.price - product.buy_price;
 
     return await this.orderDetailModel
       .findByIdAndUpdate(
@@ -91,7 +104,8 @@ export class OrderDetailsService {
         {
           $set: {
             ...dto,
-            amount: amount, // Update amount berdasarkan perhitungan baru
+            amount: amount, // Update amount based on new calculation
+            profit: profit, // Update profit
           },
         },
         { new: true },
@@ -99,9 +113,9 @@ export class OrderDetailsService {
       .exec();
   }
 
-  async delete(orderId: Types.ObjectId): Promise<OrderDetailEntity> {
+  async delete(order_id: Types.ObjectId): Promise<OrderDetailEntity> {
     return await this.orderDetailModel.findOneAndUpdate(
-      { _id: orderId },
+      { _id: order_id },
       {
         $set: {
           deleted: true,

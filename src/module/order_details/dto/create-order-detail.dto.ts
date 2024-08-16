@@ -5,21 +5,21 @@ import { Types } from 'mongoose';
 export class CreateOrderDetailDto {
   @ApiProperty()
   @IsNotEmpty()
-  orderId: Types.ObjectId;
+  order_id: Types.ObjectId;
 
   @ApiProperty()
   @IsNotEmpty()
-  productId: Types.ObjectId;
+  product_id: Types.ObjectId;
 
   @ApiProperty()
   @IsNumber()
-  quantity: number;
+  qty: number;
 
   @ApiProperty()
   @IsNumber()
-  price: number;
+  price: number; // harga jual
 
   @ApiProperty()
   @IsNumber()
-  discount: number;
+  disc: number; // diskon
 }

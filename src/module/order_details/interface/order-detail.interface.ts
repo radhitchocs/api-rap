@@ -1,9 +1,12 @@
 import { Types } from 'mongoose';
 
 export interface OrderDetailInterface {
-  orderId: Types.ObjectId;
-  productId: Types.ObjectId;
-  quantity: number;
+  order_id: Types.ObjectId;
+  product_id: Types.ObjectId;
+  buy: number;
+  qty: number;
   price: number;
-  discount: number;
+  disc: number;
+  amount: number;
+  profit: number;
 }

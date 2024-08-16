@@ -1,14 +1,6 @@
 // src/module/orders/interface/order.interface.ts
 import { Types } from 'mongoose';
 
-export interface OrderDetail {
-  product_id: Types.ObjectId;
-  quantity: number;
-  price: number;
-  discount?: number;
-  amount: number;
-}
-
 export interface Order extends Document {
   customer_id: Types.ObjectId;
   user_id: Types.ObjectId;
@@ -19,5 +11,5 @@ export interface Order extends Document {
   pay: number;
   change?: number;
   note?: string;
-  order_details: OrderDetail[];
+  product_id: Types.ObjectId;
 }

@@ -35,24 +35,8 @@ export class OrderEntity extends Document {
   @Prop()
   note: string;
 
-  @Prop({
-    type: [
-      {
-        product_id: Types.ObjectId,
-        quantity: Number,
-        price: Number,
-        discount: Number,
-        amount: Number,
-      },
-    ],
-  })
-  order_details: {
-    product_id: Types.ObjectId;
-    quantity: number;
-    price: number;
-    discount?: number;
-    amount: number;
-  }[];
+  @Prop()
+  product_id: Types.ObjectId;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderEntity);

@@ -12,7 +12,7 @@ import { CustomersService } from 'src/module/customers/service/customers.service
 import { UserService } from 'src/module/users/service/users.service';
 import { PaymentMethodsService } from 'src/module/payment-methods/service/payment-methods.service';
 import { OrderDetailsService } from 'src/module/order_details/service/order-details.service';
-
+import { ProductsService } from 'src/module/products/service/products.service';
 @Injectable()
 export class OrdersService {
   constructor(
@@ -23,6 +23,8 @@ export class OrdersService {
     private readonly paymentMethodsService: PaymentMethodsService,
     @Inject(forwardRef(() => OrderDetailsService))
     private readonly orderDetailsService: OrderDetailsService,
+    @Inject(forwardRef(() => ProductsService))
+    private readonly productsService: ProductsService,
   ) {}
 
   async create(dto: CreateOrderDto): Promise<OrderEntity> {
@@ -49,10 +51,20 @@ export class OrdersService {
       );
     }
 
+    const product = await this.productsService.getById(
+      new Types.ObjectId(dto.product_id),
+    );
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID "${dto.product_id}" not found`,
+      );
+    }
+
     const newOrder = new this.orderModel({
       customer_id: new Types.ObjectId(dto.customer_id),
       user_id: new Types.ObjectId(dto.user_id),
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
+      product_id: new Types.ObjectId(dto.product_id),
       proof_payment: dto.proof_payment,
       get_point: dto.get_point || 0,
       total: dto.total,
@@ -65,16 +77,14 @@ export class OrdersService {
       _id: Types.ObjectId;
     };
 
-    // Create order details automatically
-    for (const detail of dto.order_details) {
-      await this.orderDetailsService.create({
-        orderId: savedOrder._id,
-        productId: new Types.ObjectId(detail.product_id),
-        quantity: detail.quantity,
-        price: detail.price,
-        discount: detail.discount || 0,
-      });
-    }
+    //Create order details automatically
+    await this.orderDetailsService.create({
+      order_id: savedOrder._id, // Use order_id instead of orderId
+      product_id: dto.product_id as Types.ObjectId, // Use product_id
+      qty: product.quantity, // Use qty
+      price: product.sell_price, // Use price
+      disc: product.discount || 0, // Use disc
+    });
 
     return savedOrder;
   }
@@ -94,6 +104,7 @@ export class OrdersService {
     }
     return order.save();
   }
+
   async get(): Promise<PaginateResult<OrderEntity>> {
     const options = {
       limit: 10,

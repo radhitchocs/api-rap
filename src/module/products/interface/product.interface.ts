@@ -7,7 +7,7 @@ export interface ProductInterface extends Document {
   quantity: number;
   buy_price: number;
   sell_price: number;
-  promo?: number;
+  discount?: number;
   loyalty_points: number;
   is_promo?: boolean;
   is_active?: boolean;

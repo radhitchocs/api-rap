@@ -26,7 +26,7 @@ export class ProductEntity extends Document {
   sell_price: number;
 
   @Prop()
-  promo?: number;
+  discount?: number;
 
   @Prop()
   loyalty_points: number;

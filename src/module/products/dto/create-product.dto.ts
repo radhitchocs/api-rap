@@ -50,7 +50,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  promo?: number;
+  discount?: number;
 
   @ApiProperty()
   @IsNumber()
