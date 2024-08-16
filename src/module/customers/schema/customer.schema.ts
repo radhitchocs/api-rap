@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 @Schema({
@@ -7,29 +7,29 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
   timestamps: true,
 })
 export class CustomerEntity extends Document {
-  @Prop()
+  @Prop({ type: Types.ObjectId, auto: true })
+  _id?: Types.ObjectId;
+
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
-  email: string;
-
-  @Prop()
-  phone: string;
-
-  @Prop()
+  @Prop({ required: true })
   address: string;
 
+  @Prop({ required: true })
+  phone: string;
+
+  @Prop({ required: true })
+  email: string;
+
   @Prop({ default: 0 })
-  loyalty_points: number;
+  point: number;
 
   @Prop({ default: true })
   is_active: boolean;
 
-  @Prop()
-  created_at: Date;
-
-  @Prop()
-  updated_at: Date;
+  @Prop({ type: Types.ObjectId, required: true })
+  user_id: Types.ObjectId;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(CustomerEntity);

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUserByCriteriaDto } from '../dto/get-user-by-criteria.dto';
@@ -40,6 +40,14 @@ export class UserService {
 
   async getUserByCriteria(dto: GetUserByCriteriaDto): Promise<UserInterface> {
     return await this.userModel.findOne({ ...dto }).lean();
+  }
+
+  async findById(userId: Types.ObjectId): Promise<UserInterface> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   //   async updateUser(

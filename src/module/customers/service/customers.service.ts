@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult, Types } from 'mongoose';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { CustomerInterface } from '../interface/customer.interface';
 import { CustomerEntity } from '../schema/customer.schema';
+import { UserService } from 'src/module/users/service/users.service';
 
 @Injectable()
 export class CustomersService {
   constructor(
     @InjectModel(CustomerEntity.name)
     private customerModel: PaginateModel<CustomerEntity>,
+    private usersService: UserService, // Inject UsersService here
   ) {}
 
   async get(): Promise<PaginateResult<CustomerEntity>> {
@@ -28,46 +30,51 @@ export class CustomersService {
   }
 
   async create(dto: CreateCustomerDto): Promise<CustomerInterface> {
-    const newCustomer = new this.customerModel(dto);
+    const user = await this.usersService.findById(dto.user_id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const newCustomer = new this.customerModel({ ...dto, user_id: user._id });
     return newCustomer.save();
   }
 
-  async getLoyaltyPoints(customerId: string): Promise<number> {
+  async getPoints(customerId: Types.ObjectId): Promise<number> {
     const customer = await this.customerModel.findById(customerId).exec();
     if (!customer) {
-      throw new Error('Customer not found');
+      throw new NotFoundException('Customer not found');
     }
-    return customer.loyalty_points;
+    return customer.point;
   }
 
   async update(
     customerId: Types.ObjectId,
-    dto: CreateCustomerDto,
+    dto: Partial<CreateCustomerDto>,
   ): Promise<CustomerInterface> {
-    const customer = await this.customerModel.findById(customerId).lean();
+    const customer = await this.customerModel.findById(customerId);
 
     if (!customer) {
-      throw new Error('Customer not found');
+      throw new NotFoundException('Customer not found');
     }
-    return await this.customerModel.findOneAndUpdate(
-      { _id: customerId },
-      {
-        $set: dto,
-      },
-      { new: true },
-    );
+
+    if (dto.user_id) {
+      const user = await this.usersService.findById(dto.user_id);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      dto.user_id = user._id;
+    }
+
+    Object.assign(customer, dto);
+    return customer.save();
   }
 
-  async delete(productId: Types.ObjectId) {
-    return await this.customerModel.findOneAndUpdate(
-      { _id: productId },
-      {
-        $set: {
-          deleted: true,
-          deletedAt: new Date(),
-        },
-      },
-      { new: true },
-    );
+  async delete(customerId: Types.ObjectId) {
+    const customer = await this.customerModel.findById(customerId);
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+    customer.is_active = false;
+    return customer.save();
   }
 }

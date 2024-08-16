@@ -36,10 +36,12 @@ export class CustomersController {
   }
 
   @IsPublic()
-  @Get('/:customerId/loyalty-points')
-  @ResponseMessage('Successfully retrieved loyalty points!')
-  async getLoyaltyPoints(@Param('customerId') customerId: string) {
-    const result = await this.customerService.getLoyaltyPoints(customerId);
+  @Get('/:customerId/points')
+  @ResponseMessage('Successfully retrieved customer points!')
+  async getPoints(@Param('customerId') customerId: string) {
+    const result = await this.customerService.getPoints(
+      new Types.ObjectId(customerId),
+    );
     return result;
   }
 
@@ -54,20 +56,13 @@ export class CustomersController {
   @ResponseMessage('Customer has been updated successfully.')
   async update(
     @Param('customerId') customerId: string,
-    @Body() dto: CreateCustomerDto,
+    @Body() dto: Partial<CreateCustomerDto>,
   ) {
-    const updateData = {
-      ...dto,
-    };
-
-    return this.customerService.update(
-      new Types.ObjectId(customerId),
-      updateData,
-    );
+    return this.customerService.update(new Types.ObjectId(customerId), dto);
   }
 
   @Delete('/:customerId')
-  @ResponseMessage('Customer has been deleted successfully.')
+  @ResponseMessage('Customer has been deactivated successfully.')
   async delete(@Param('customerId') customerId: string) {
     return this.customerService.delete(new Types.ObjectId(customerId));
   }

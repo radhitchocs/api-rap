@@ -1,10 +1,12 @@
+import { Types } from 'mongoose';
+
 export interface CustomerInterface {
+  _id?: Types.ObjectId;
   name: string;
-  email: string;
-  phone: string;
   address: string;
-  loyalty_points?: number;
-  is_active?: boolean;
-  created_at?: Date;
-  updated_at?: Date;
+  phone: string;
+  email: string;
+  point: number;
+  is_active: boolean;
+  user_id: Types.ObjectId;
 }

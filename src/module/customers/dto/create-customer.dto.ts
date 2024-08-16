@@ -6,8 +6,10 @@ import {
   IsString,
   MaxLength,
   IsBoolean,
+  IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class CreateCustomerDto {
   @ApiProperty()
@@ -17,8 +19,9 @@ export class CreateCustomerDto {
   name: string;
 
   @ApiProperty()
-  @IsEmail()
-  email: string;
+  @IsString()
+  @IsNotEmpty()
+  address: string;
 
   @ApiProperty()
   @IsString()
@@ -26,18 +29,21 @@ export class CreateCustomerDto {
   phone: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  address: string;
+  @IsEmail()
+  email: string;
 
   @ApiProperty()
   @IsOptional()
-  @IsNotEmpty()
+  @IsNumber()
   @Type(() => Number)
-  loyalty_points?: number;
+  point?: number;
 
   @ApiProperty()
   @IsOptional()
   @IsBoolean()
   is_active?: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  user_id: Types.ObjectId;
 }
