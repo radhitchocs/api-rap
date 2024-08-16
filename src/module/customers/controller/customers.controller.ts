@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Param,
   Patch,
   Delete,
@@ -13,7 +12,6 @@ import { ResponseMessage } from 'src/decorator/response.decorator';
 import { IsPublic } from 'src/metadata/metadata/is-public.metadata';
 
 import { CreateCustomerDto } from '../dto/create-customer.dto';
-import { GetCustomerDto } from '../dto/get-customer.dto';
 import { CustomersService } from '../service/customers.service';
 import { Types } from 'mongoose';
 
@@ -23,8 +21,8 @@ export class CustomersController {
 
   @Get()
   @ResponseMessage('Successfully retrieved customers!')
-  async get(@Query() dto: GetCustomerDto) {
-    const result = await this.customerService.get(dto);
+  async get() {
+    const result = await this.customerService.get();
     return result;
   }
 

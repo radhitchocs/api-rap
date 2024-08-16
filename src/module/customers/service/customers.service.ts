@@ -12,11 +12,9 @@ export class CustomersService {
     private customerModel: PaginateModel<CustomerEntity>,
   ) {}
 
-  async get(dto: any): Promise<PaginateResult<CustomerEntity>> {
-    const { page, limit } = dto;
+  async get(): Promise<PaginateResult<CustomerEntity>> {
     const options = {
-      page,
-      limit: limit || 10,
+      limit: 10,
       sort: {
         createdAt: -1,
       },
