@@ -1,6 +1,12 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { MongooseDatabaseConfig } from 'src/config/database/mongoose.database.config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './module/auth/auth.module';
@@ -20,20 +26,36 @@ import { PrinterSettingsModule } from './module/printer-settings/printer-settigs
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/api-rap'),
+    MongooseModule.forRootAsync({
+      useClass: MongooseDatabaseConfig,
+    }),
+    ServeStaticModule.forRootAsync({
+      useFactory: () => {
+        const uploadsPath = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadsPath)) {
+          fs.mkdirSync(uploadsPath);
+        }
+
+        return [
+          {
+            rootPath: uploadsPath,
+            serveRoot: '/uploads/',
+          },
+        ];
+      },
+    }),
     AuthModule,
+    UsersModule,
+    RolesModule,
     CustomersModule,
     OrderDetailsModule,
     OrdersModule,
     PaymentMethodsModule,
     PermissionsModule,
-    ProductsModule,
     RestModule,
-    RolesModule,
+    ProductsModule,
     StockOpnamesModule,
-    UsersModule,
     PrinterSettingsModule,
   ],
   controllers: [AppController],
