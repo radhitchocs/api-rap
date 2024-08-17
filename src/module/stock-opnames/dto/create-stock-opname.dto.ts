@@ -19,13 +19,13 @@ export class CreateStockOpnameDto {
 
   @ApiProperty()
   @IsNumber()
-  @IsNotEmpty()
-  difference: number;
+  @IsOptional()
+  difference?: number;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  price_value: number;
+  // @ApiProperty()
+  // @IsNumber()
+  // @IsNotEmpty()
+  // price_value: number;
 
   @ApiProperty()
   @IsString()

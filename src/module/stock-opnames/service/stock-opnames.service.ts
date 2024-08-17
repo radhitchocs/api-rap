@@ -16,25 +16,31 @@ export class StockOpnamesService {
   ) {}
 
   async create(dto: CreateStockOpnameDto): Promise<StockOpnameEntity> {
-    const product = await this.productsService.getById(
-      new Types.ObjectId(dto.product_id),
-    );
+    // Validasi produk berdasarkan batch_code
+    const product = await this.productsService.findByBatchCode(dto.batch_code);
     if (!product) {
       throw new NotFoundException(
-        `Product with ID "${dto.product_id}" not found`,
+        `Product with batch code "${dto.batch_code}" not found`,
       );
     }
 
+    // Validasi pengguna
     const user = await this.userService.getUser(dto.user_id);
     if (!user) {
       throw new NotFoundException(`User with ID "${dto.user_id}" not found`);
     }
 
+    // Hitung difference
+    const difference = product.stock - dto.available;
+    const differenceValue = difference >= 0 ? difference : 0;
+
     const newStockOpname = new this.stockOpnameModel({
       ...dto,
-      product_id: new Types.ObjectId(dto.product_id),
+      product_id: product._id,
       user_id: new Types.ObjectId(dto.user_id),
+      difference: differenceValue, // Atur ke angka atau 0
     });
+
     return newStockOpname.save();
   }
 
