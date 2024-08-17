@@ -1,5 +1,3 @@
-// src/module/point-settings/schema/point-settings.schema.ts
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
@@ -10,10 +8,10 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
 })
 export class PointSettingsEntity extends Document {
   @Prop({ required: true })
-  point_value: number;
+  point: number; // Ganti point_value dengan point
 
   @Prop({ required: true })
-  earning_criteria: string;
+  every: string; // Ganti earning_criteria dengan every
 }
 
 export const PointSettingsSchema =

@@ -1,6 +1,4 @@
-// src/module/point-settings/interface/point-settings.interface.ts
-
 export interface PointSettingsInterface {
-  point_value: number;
-  earning_criteria: string;
+  point: number; // Ganti point_value dengan point
+  every: string; // Ganti earning_criteria dengan every
 }
