@@ -17,7 +17,7 @@ export class ProductEntity extends Document {
   image: string;
 
   @Prop()
-  quantity: number;
+  stock: number;
 
   @Prop()
   buy_price: number;

@@ -35,11 +35,11 @@ export class CreateOrderDto {
   @IsOptional()
   proof_payment?: string;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  @Type(() => Number)
-  total: number;
+  // @ApiProperty()
+  // @IsNumber()
+  // @IsNotEmpty()
+  // @Type(() => Number)
+  // total: number;
 
   @ApiProperty()
   @IsNumber()
@@ -47,14 +47,20 @@ export class CreateOrderDto {
   @Type(() => Number)
   pay: number;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  @Type(() => Number)
-  change?: number;
+  // @ApiProperty()
+  // @IsNumber()
+  // @IsOptional()
+  // @Type(() => Number)
+  // change?: number;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
   note?: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  qty: number;
 }

@@ -60,15 +60,31 @@ export class OrdersService {
       );
     }
 
+    if (product.stock < dto.qty) {
+      throw new Error(
+        `Insufficient stock. Available: ${product.stock}, Requested: ${dto.qty}`,
+      );
+    }
+
+    const total = dto.qty * product.sell_price;
+    // Pengecekan apakah uang yang dibayarkan cukup
+    if (dto.pay < total) {
+      throw new Error(
+        `Insufficient payment. Total: ${total}, Paid: ${dto.pay}`,
+      );
+    }
+    const change = dto.pay - total;
+
     const newOrder = new this.orderModel({
       customer_id: new Types.ObjectId(dto.customer_id),
       user_id: new Types.ObjectId(dto.user_id),
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
       product_id: new Types.ObjectId(dto.product_id),
       proof_payment: dto.proof_payment,
-      total: dto.total,
+      qty: dto.qty,
+      total: total,
       pay: dto.pay,
-      change: dto.change || dto.pay - dto.total,
+      change: change,
       note: dto.note,
     });
 
@@ -76,11 +92,18 @@ export class OrdersService {
       _id: Types.ObjectId;
     };
 
+    // Kurangi stok produk
+    const updatedStock = product.stock - dto.qty;
+    await this.productsService.updateStock(
+      new Types.ObjectId(dto.product_id),
+      updatedStock,
+    );
+
     //Create order details automatically
     await this.orderDetailsService.create({
       order_id: savedOrder._id, // Use order_id instead of orderId
       product_id: dto.product_id as Types.ObjectId, // Use product_id
-      qty: product.quantity, // Use qty
+      qty: dto.qty, // Use qty
       price: product.sell_price, // Use price
       disc: product.discount || 0, // Use disc
     });

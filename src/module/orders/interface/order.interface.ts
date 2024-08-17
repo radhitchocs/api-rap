@@ -11,4 +11,5 @@ export interface Order extends Document {
   change?: number;
   note?: string;
   product_id: Types.ObjectId;
+  qty: number;
 }

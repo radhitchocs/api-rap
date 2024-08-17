@@ -4,7 +4,7 @@ export interface ProductInterface extends Document {
   name: string;
   description: string;
   image: string;
-  quantity: number;
+  stock: number;
   buy_price: number;
   sell_price: number;
   discount?: number;

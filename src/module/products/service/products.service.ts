@@ -67,6 +67,26 @@ export class ProductsService {
     );
   }
 
+  async updateStock(
+    productId: Types.ObjectId,
+    newStock: number,
+  ): Promise<ProductEntity> {
+    if (isNaN(newStock) || newStock < 0) {
+      throw new Error('Invalid stock value');
+    }
+
+    const updatedProduct = await this.productModel.findByIdAndUpdate(
+      productId,
+      { $set: { stock: newStock } },
+      { new: true, runValidators: true },
+    );
+
+    if (!updatedProduct) {
+      throw new NotFoundException(`Product with ID "${productId}" not found`);
+    }
+
+    return updatedProduct;
+  }
   async delete(productId: Types.ObjectId): Promise<ProductInterface> {
     return await this.productModel.findOneAndUpdate(
       { _id: productId },

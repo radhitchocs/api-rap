@@ -32,7 +32,7 @@ export class CreateProductDto {
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
-  quantity: number;
+  stock: number;
 
   @ApiProperty()
   @IsNumber()

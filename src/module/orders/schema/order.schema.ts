@@ -34,6 +34,9 @@ export class OrderEntity extends Document {
 
   @Prop()
   product_id: Types.ObjectId;
+
+  @Prop()
+  qty: number;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderEntity);
