@@ -1,12 +1,14 @@
 import { Types } from 'mongoose';
 
 export interface OrderPointInterface {
+  _id?: Types.ObjectId;
   order_id: Types.ObjectId;
   customer_id: Types.ObjectId;
+  user_id: Types.ObjectId; // Tambahkan user_id
+  total: number; // Tambahkan total
+  pay: number; // Tambahkan pay
+  change?: number; // Tambahkan change
+  note?: string; // Tambahkan note (opsional)
   total_points_earned: number;
-  created_at: Date;
-  order_point_details: {
-    product_id: Types.ObjectId;
-    points_earned: number;
-  }[];
+  product_id: Types.ObjectId;
 }

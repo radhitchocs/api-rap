@@ -11,6 +11,7 @@ import { OrderPointDetailsModule } from '../order_points_details/order-point-det
 import { OrdersModule } from '../orders/orders.module';
 import { ProductsModule } from '../products/products.module';
 import { CustomersModule } from '../customers/customers.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CustomersModule } from '../customers/customers.module';
     forwardRef(() => OrdersModule),
     forwardRef(() => ProductsModule),
     forwardRef(() => CustomersModule),
+    forwardRef(() => UsersModule),
   ],
   controllers: [OrderPointsController],
   providers: [OrderPointsService],

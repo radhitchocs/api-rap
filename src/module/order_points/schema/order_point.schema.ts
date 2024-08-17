@@ -13,17 +13,26 @@ export class OrderPointEntity extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Customer' })
   customer_id: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: 'User' }) // Tambahkan user_id
+  user_id: Types.ObjectId;
+
+  @Prop()
+  total: number; // Total biaya pesanan
+
+  @Prop()
+  pay: number; // Jumlah yang dibayar oleh pelanggan
+
+  @Prop()
+  change?: number; // Kembalian yang diterima pelanggan
+
+  @Prop()
+  note: string; // Catatan terkait pesanan
+
   @Prop()
   total_points_earned: number;
 
   @Prop()
-  created_at: Date;
-
-  @Prop({ type: [{ product_id: Types.ObjectId, points_earned: Number }] })
-  order_point_details: {
-    product_id: Types.ObjectId;
-    points_earned: number;
-  }[];
+  product_id: Types.ObjectId;
 }
 
 export const OrderPointSchema = SchemaFactory.createForClass(OrderPointEntity);

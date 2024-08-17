@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
 
 export class CreateOrderPointDto {
   @ApiProperty()
@@ -11,17 +11,31 @@ export class CreateOrderPointDto {
   customer_id: string;
 
   @ApiProperty()
+  @IsString()
+  user_id: string; // Tambahkan user_id
+
+  @ApiProperty()
+  @IsNumber()
+  total: number; // Tambahkan total
+
+  @ApiProperty()
+  @IsNumber()
+  pay: number; // Tambahkan pay
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  change?: number; // Tambahkan change
+
+  @ApiProperty()
+  @IsString()
+  note: string; // Tambahkan note
+
+  @ApiProperty()
   @IsNumber()
   total_points_earned: number;
 
   @ApiProperty()
-  @IsDateString()
-  created_at: Date;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  order_point_details: {
-    product_id: string;
-    points_earned: number;
-  }[];
+  @IsString()
+  product_id: string;
 }
