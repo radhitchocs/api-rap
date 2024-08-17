@@ -26,11 +26,36 @@ export class ProductsService {
       throw new Error('Batch code is required');
     }
 
+    // Cek apakah sudah ada produk dengan batch_code yang sama
     const existingProduct = await this.productModel
       .findOne({ batch_code: dto.batch_code })
       .exec();
+
     if (existingProduct) {
-      throw new Error('Product with this batch code already exists');
+      // Update produk yang ada dengan data baru
+      return await this.productModel.findOneAndUpdate(
+        { batch_code: dto.batch_code },
+        {
+          $set: {
+            name: dto.name, // Update nama jika perlu
+            description: dto.description, // Update deskripsi jika perlu
+            image: dto.image || existingProduct.image, // Gunakan gambar baru jika ada
+            stock: existingProduct.stock + dto.stock, // Tambah stok
+            buy_price: dto.buy_price, // Update harga beli jika perlu
+            sell_price: dto.sell_price, // Update harga jual jika perlu
+            discount: dto.discount || existingProduct.discount, // Gunakan diskon baru jika ada
+            is_promo:
+              dto.is_promo !== undefined
+                ? dto.is_promo
+                : existingProduct.is_promo, // Update promo jika perlu
+            is_active:
+              dto.is_active !== undefined
+                ? dto.is_active
+                : existingProduct.is_active, // Update status aktif jika perlu
+          },
+        },
+        { new: true }, // Kembalikan produk yang telah diperbarui
+      );
     }
 
     const newProduct = new this.productModel(dto);
