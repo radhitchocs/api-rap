@@ -9,8 +9,6 @@ export class User extends Document {
   @Prop()
   name: string;
   @Prop()
-  memberCode?: '';
-  @Prop()
   username: string;
   @Prop()
   email: string;
