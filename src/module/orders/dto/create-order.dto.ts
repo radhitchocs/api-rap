@@ -37,12 +37,6 @@ export class CreateOrderDto {
 
   @ApiProperty()
   @IsNumber()
-  @IsOptional()
-  @Type(() => Number)
-  get_point?: number;
-
-  @ApiProperty()
-  @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
   total: number;

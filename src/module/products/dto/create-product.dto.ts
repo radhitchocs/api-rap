@@ -52,12 +52,6 @@ export class CreateProductDto {
   @Type(() => Number)
   discount?: number;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  @Type(() => Number)
-  loyalty_points: number;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()

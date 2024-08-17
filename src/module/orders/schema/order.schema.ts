@@ -21,9 +21,6 @@ export class OrderEntity extends Document {
   proof_payment: string;
 
   @Prop()
-  get_point: number;
-
-  @Prop()
   total: number;
 
   @Prop()

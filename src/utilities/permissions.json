@@ -5,12 +5,6 @@
         "update",
         "delete"
     ],
-    "cashier_point": [
-        "read",
-        "create",
-        "update",
-        "delete"
-    ],
     "data_order": [
         "read",
         "create",

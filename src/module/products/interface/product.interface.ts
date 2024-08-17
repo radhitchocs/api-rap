@@ -8,7 +8,6 @@ export interface ProductInterface extends Document {
   buy_price: number;
   sell_price: number;
   discount?: number;
-  loyalty_points: number;
   is_promo?: boolean;
   is_active?: boolean;
   user_id?: Types.ObjectId;

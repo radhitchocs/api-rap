@@ -8,15 +8,12 @@ import { UsersModule } from './module/users/users.module';
 import { RolesModule } from './module/roles/roles.module';
 import { CustomersModule } from './module/customers/customers.module';
 import { OrderDetailsModule } from './module/order_details/order-details.module';
-import { OrderPointsModule } from './module/order_points/order_points.module';
 import { OrdersModule } from './module/orders/orders.module';
 import { PaymentMethodsModule } from './module/payment-methods/payment-methods.module';
 import { PermissionsModule } from './module/permissions/permissions.module';
-import { PointSettingsModule } from './module/point-settings/point-settings.module';
 import { RestModule } from './module/rest/rest.module';
 import { ProductsModule } from './module/products/products.module';
 import { StockOpnamesModule } from './module/stock-opnames/stock-opnames.module';
-import { OrderPointDetailsModule } from './module/order_points_details/order-point-details.module';
 import { PrinterSettingsModule } from './module/printer-settings/printer-settigs.module';
 
 @Module({
@@ -29,12 +26,9 @@ import { PrinterSettingsModule } from './module/printer-settings/printer-settigs
     AuthModule,
     CustomersModule,
     OrderDetailsModule,
-    OrderPointsModule,
-    OrderPointDetailsModule,
     OrdersModule,
     PaymentMethodsModule,
     PermissionsModule,
-    PointSettingsModule,
     ProductsModule,
     RestModule,
     RolesModule,

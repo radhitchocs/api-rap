@@ -6,9 +6,7 @@ import {
   IsString,
   MaxLength,
   IsBoolean,
-  IsNumber,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { Types } from 'mongoose';
 
 export class CreateCustomerDto {
@@ -31,12 +29,6 @@ export class CreateCustomerDto {
   @ApiProperty()
   @IsEmail()
   email: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  point?: number;
 
   @ApiProperty()
   @IsOptional()

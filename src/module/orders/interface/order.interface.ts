@@ -6,7 +6,6 @@ export interface Order extends Document {
   user_id: Types.ObjectId;
   payment_method_id: Types.ObjectId;
   proof_payment?: string;
-  get_point?: number;
   total: number;
   pay: number;
   change?: number;

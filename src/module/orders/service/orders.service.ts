@@ -66,7 +66,6 @@ export class OrdersService {
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
       product_id: new Types.ObjectId(dto.product_id),
       proof_payment: dto.proof_payment,
-      get_point: dto.get_point || 0,
       total: dto.total,
       pay: dto.pay,
       change: dto.change || dto.pay - dto.total,

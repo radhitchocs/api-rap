@@ -39,14 +39,6 @@ export class CustomersService {
     return newCustomer.save();
   }
 
-  async getPoints(customerId: Types.ObjectId): Promise<number> {
-    const customer = await this.customerModel.findById(customerId).exec();
-    if (!customer) {
-      throw new NotFoundException('Customer not found');
-    }
-    return customer.point;
-  }
-
   async update(
     customerId: Types.ObjectId,
     dto: Partial<CreateCustomerDto>,

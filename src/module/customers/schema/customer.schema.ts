@@ -22,9 +22,6 @@ export class CustomerEntity extends Document {
   @Prop({ required: true })
   email: string;
 
-  @Prop({ default: 0 })
-  point: number;
-
   @Prop({ default: true })
   is_active: boolean;
 

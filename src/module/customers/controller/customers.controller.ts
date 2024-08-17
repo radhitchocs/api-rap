@@ -9,8 +9,6 @@ import {
 } from '@nestjs/common';
 
 import { ResponseMessage } from 'src/decorator/response.decorator';
-import { IsPublic } from 'src/metadata/metadata/is-public.metadata';
-
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { CustomersService } from '../service/customers.service';
 import { Types } from 'mongoose';
@@ -30,16 +28,6 @@ export class CustomersController {
   @ResponseMessage('Successfully retrieved details of customer!')
   async getById(@Param('customerId') customerId: string) {
     const result = await this.customerService.getById(
-      new Types.ObjectId(customerId),
-    );
-    return result;
-  }
-
-  @IsPublic()
-  @Get('/:customerId/points')
-  @ResponseMessage('Successfully retrieved customer points!')
-  async getPoints(@Param('customerId') customerId: string) {
-    const result = await this.customerService.getPoints(
       new Types.ObjectId(customerId),
     );
     return result;

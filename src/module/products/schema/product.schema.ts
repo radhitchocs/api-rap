@@ -28,9 +28,6 @@ export class ProductEntity extends Document {
   @Prop()
   discount?: number;
 
-  @Prop()
-  loyalty_points: number;
-
   @Prop({ default: false })
   is_promo?: boolean;
 
