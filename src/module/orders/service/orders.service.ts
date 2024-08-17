@@ -79,6 +79,7 @@ export class OrdersService {
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
       product_id: product._id, // Use the product_id retrieved via batch_code
       proof_payment: dto.proof_payment,
+      buy_price: product.buy_price * dto.qty,
       qty: dto.qty,
       total: total,
       pay: dto.pay,

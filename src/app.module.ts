@@ -21,6 +21,7 @@ import { RestModule } from './module/rest/rest.module';
 import { ProductsModule } from './module/products/products.module';
 import { StockOpnamesModule } from './module/stock-opnames/stock-opnames.module';
 import { PrinterSettingsModule } from './module/printer-settings/printer-settigs.module';
+import { AnalyticsModule } from './module/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { PrinterSettingsModule } from './module/printer-settings/printer-settigs
     ProductsModule,
     StockOpnamesModule,
     PrinterSettingsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
