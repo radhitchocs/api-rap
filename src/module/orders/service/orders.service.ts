@@ -51,12 +51,10 @@ export class OrdersService {
       );
     }
 
-    const product = await this.productsService.getById(
-      new Types.ObjectId(dto.product_id),
-    );
+    const product = await this.productsService.findByBatchCode(dto.batch_code);
     if (!product) {
       throw new NotFoundException(
-        `Product with ID "${dto.product_id}" not found`,
+        `Product with batch code "${dto.batch_code}" not found`,
       );
     }
 
@@ -67,7 +65,7 @@ export class OrdersService {
     }
 
     const total = dto.qty * product.sell_price;
-    // Pengecekan apakah uang yang dibayarkan cukup
+
     if (dto.pay < total) {
       throw new Error(
         `Insufficient payment. Total: ${total}, Paid: ${dto.pay}`,
@@ -79,7 +77,7 @@ export class OrdersService {
       customer_id: new Types.ObjectId(dto.customer_id),
       user_id: new Types.ObjectId(dto.user_id),
       payment_method_id: new Types.ObjectId(dto.payment_method_id),
-      product_id: new Types.ObjectId(dto.product_id),
+      product_id: product._id, // Use the product_id retrieved via batch_code
       proof_payment: dto.proof_payment,
       qty: dto.qty,
       total: total,
@@ -92,20 +90,18 @@ export class OrdersService {
       _id: Types.ObjectId;
     };
 
-    // Kurangi stok produk
     const updatedStock = product.stock - dto.qty;
     await this.productsService.updateStock(
-      new Types.ObjectId(dto.product_id),
+      product._id as Types.ObjectId, // Use product._id directly
       updatedStock,
     );
 
-    //Create order details automatically
     await this.orderDetailsService.create({
-      order_id: savedOrder._id, // Use order_id instead of orderId
-      product_id: dto.product_id as Types.ObjectId, // Use product_id
-      qty: dto.qty, // Use qty
-      price: product.sell_price, // Use price
-      disc: product.discount || 0, // Use disc
+      order_id: savedOrder._id,
+      product_id: product._id as Types.ObjectId,
+      qty: dto.qty,
+      price: product.sell_price,
+      disc: product.discount || 0,
     });
 
     return savedOrder;

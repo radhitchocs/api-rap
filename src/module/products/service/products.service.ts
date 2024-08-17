@@ -22,6 +22,17 @@ export class ProductsService {
       }
     }
 
+    if (!dto.batch_code) {
+      throw new Error('Batch code is required');
+    }
+
+    const existingProduct = await this.productModel
+      .findOne({ batch_code: dto.batch_code })
+      .exec();
+    if (existingProduct) {
+      throw new Error('Product with this batch code already exists');
+    }
+
     const newProduct = new this.productModel(dto);
     return newProduct.save();
   }
@@ -85,7 +96,11 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID "${productId}" not found`);
     }
 
-    return updatedProduct;
+    return updatedProduct as ProductEntity;
+  }
+
+  async findByBatchCode(batchCode: string): Promise<ProductInterface | null> {
+    return this.productModel.findOne({ batch_code: batchCode }).exec();
   }
   async delete(productId: Types.ObjectId): Promise<ProductInterface> {
     return await this.productModel.findOneAndUpdate(

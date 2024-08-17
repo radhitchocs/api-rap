@@ -34,6 +34,9 @@ export class ProductEntity extends Document {
   @Prop({ default: true })
   is_active?: boolean;
 
+  @Prop({ unique: true }) // Unique untuk memastikan setiap batch code berbeda
+  batch_code: string;
+
   @Prop({ type: Types.ObjectId, ref: 'User' })
   user_id?: Types.ObjectId;
 }

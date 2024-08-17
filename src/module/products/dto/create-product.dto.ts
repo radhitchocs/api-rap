@@ -66,4 +66,9 @@ export class CreateProductDto {
   @IsOptional()
   @IsMongoId()
   user_id?: Types.ObjectId;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  batch_code: string;
 }

@@ -18,8 +18,8 @@ export class CreateOrderDto {
 
   @ApiProperty()
   @IsMongoId()
-  @IsNotEmpty()
-  product_id: Types.ObjectId;
+  @IsOptional()
+  product_id?: Types.ObjectId;
 
   @ApiProperty()
   @IsMongoId()
@@ -63,4 +63,7 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @Type(() => Number)
   qty: number;
+
+  @ApiProperty()
+  batch_code: string;
 }
