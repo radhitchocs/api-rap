@@ -17,6 +17,7 @@ import { RestModule } from './module/rest/rest.module';
 import { ProductsModule } from './module/products/products.module';
 import { StockOpnamesModule } from './module/stock-opnames/stock-opnames.module';
 import { OrderPointDetailsModule } from './module/order_points_details/order-point-details.module';
+import { PrinterSettingsModule } from './module/printer-settings/printer-settigs.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { OrderPointDetailsModule } from './module/order_points_details/order-poi
     RolesModule,
     StockOpnamesModule,
     UsersModule,
+    PrinterSettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
