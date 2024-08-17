@@ -44,7 +44,7 @@ export class OrderPointsService {
       );
     }
 
-    const user = await this.usersService.getUser(dto.user_id); // Verifikasi user_id
+    const user = await this.usersService.getUser(dto.user_id);
     if (!user) {
       throw new NotFoundException(`User with ID "${dto.user_id}" not found`);
     }
@@ -58,27 +58,31 @@ export class OrderPointsService {
       );
     }
 
-    // Hitung change sebagai pay - total
-    const calculatedChange = dto.pay - dto.total;
+    // Hitung total secara otomatis
+    const calculatedTotal = dto.qty * product.sell_price;
+    const calculatedChange = dto.pay - calculatedTotal;
 
     const newOrderPoint = new this.orderPointModel({
       order_id: new Types.ObjectId(dto.order_id),
       customer_id: new Types.ObjectId(dto.customer_id),
       user_id: new Types.ObjectId(dto.user_id),
-      total: dto.total,
+      total: calculatedTotal,
       pay: dto.pay,
-      change: calculatedChange, // Set nilai change yang telah dihitung
+      qty: dto.qty,
+      change: calculatedChange,
       note: dto.note,
       total_points_earned: dto.total_points_earned,
     });
 
     const savedOrderPoint = await newOrderPoint.save();
 
-    // Create order point details automatically
     await this.orderPointDetailsService.create({
-      order_point_id: savedOrderPoint._id as Types.ObjectId,
+      order_point_id: new Types.ObjectId(savedOrderPoint._id as string),
       product_id: new Types.ObjectId(dto.product_id),
-      points_earned: product.loyalty_points,
+      buy: product.buy_price, // Gunakan harga beli produk
+      qty: dto.qty,
+      price: product.sell_price,
+      amount: dto.qty * product.sell_price,
     });
 
     return savedOrderPoint;
@@ -139,8 +143,22 @@ export class OrderPointsService {
       }
     }
 
-    // Hitung ulang change jika ada update pada pay atau total
-    const updatedChange = dto.pay ? dto.pay - dto.total : orderPoint.change;
+    let updatedTotal = orderPoint.total;
+    let updatedChange = orderPoint.change;
+
+    if (dto.qty || dto.product_id) {
+      const product = await this.productsService.getById(
+        new Types.ObjectId(dto.product_id),
+      );
+      if (!product) {
+        throw new NotFoundException(
+          `Product with ID "${dto.product_id}" not found`,
+        );
+      }
+
+      updatedTotal = dto.qty * product.sell_price;
+      updatedChange = dto.pay ? dto.pay - updatedTotal : updatedChange;
+    }
 
     return await this.orderPointModel.findByIdAndUpdate(
       id,
@@ -150,7 +168,8 @@ export class OrderPointsService {
           order_id: new Types.ObjectId(dto.order_id),
           customer_id: new Types.ObjectId(dto.customer_id),
           user_id: new Types.ObjectId(dto.user_id),
-          change: updatedChange, // Set nilai change yang telah diperbarui
+          total: updatedTotal,
+          change: updatedChange,
         },
       },
       { new: true },

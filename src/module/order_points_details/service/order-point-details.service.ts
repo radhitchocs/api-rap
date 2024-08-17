@@ -32,11 +32,25 @@ export class OrderPointDetailsService {
         `Product with ID "${dto.product_id}" not found`,
       );
     }
+    // const calculatedAmount = dto.qty * dto.price;
+    // if (calculatedAmount !== dto.amount) {
+    //   throw new Error('Invalid amount. It should be qty * price');
+    // }
+
+    const orderPoint = await this.orderPointDetailModel
+      .findOne({ order_point_id: dto.order_point_id })
+      .exec();
+    if (orderPoint) {
+      throw new Error('OrderPoint already exists');
+    }
 
     const newOrderPointDetail = new this.orderPointDetailModel({
       order_point_id: new Types.ObjectId(dto.order_point_id),
       product_id: new Types.ObjectId(dto.product_id),
-      points_earned: dto.points_earned,
+      buy: dto.buy,
+      qty: dto.qty,
+      price: dto.price,
+      amount: dto.amount,
     });
 
     return newOrderPointDetail.save();

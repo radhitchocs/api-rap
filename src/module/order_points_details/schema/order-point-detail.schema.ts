@@ -1,5 +1,3 @@
-// src/module/order_points_details/schema/order-point-detail.schema.ts
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
@@ -16,7 +14,16 @@ export class OrderPointDetailEntity extends Document {
   product_id: Types.ObjectId;
 
   @Prop({ required: true })
-  points_earned: number;
+  buy: number;
+
+  @Prop({ required: true })
+  qty: number;
+
+  @Prop({ required: true })
+  price: number;
+
+  @Prop({ required: true })
+  amount: number;
 }
 
 export const OrderPointDetailSchema = SchemaFactory.createForClass(

@@ -1,7 +1,10 @@
 import { Types } from 'mongoose';
 
 export interface OrderPointDetailInterface {
-  order_id: Types.ObjectId;
+  order_point_id: Types.ObjectId; // Sesuaikan nama dengan DTO
   product_id: Types.ObjectId;
-  points_earned: number;
+  buy: number;
+  qty: number;
+  price: number;
+  amount: number;
 }

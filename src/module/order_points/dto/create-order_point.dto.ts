@@ -12,30 +12,30 @@ export class CreateOrderPointDto {
 
   @ApiProperty()
   @IsString()
-  user_id: string; // Tambahkan user_id
+  user_id: string;
 
   @ApiProperty()
   @IsNumber()
-  total: number; // Tambahkan total
-
-  @ApiProperty()
-  @IsNumber()
-  pay: number; // Tambahkan pay
+  pay: number;
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
-  change?: number; // Tambahkan change
+  change?: number; // Ini akan dihitung berdasarkan total dan pay
 
   @ApiProperty()
   @IsString()
-  note: string; // Tambahkan note
+  @IsOptional()
+  note?: string; // Opsional, bisa ditambahkan jika perlu
 
   @ApiProperty()
   @IsNumber()
-  total_points_earned: number;
+  total_points_earned: number; // Total poin yang diperoleh
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
+  qty: number;
+
+  @ApiProperty()
   product_id: string;
 }
