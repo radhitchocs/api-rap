@@ -11,19 +11,19 @@ export class OrderDetailEntity extends Document {
   order_id: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, required: true, ref: 'Product' })
-  product_id: Types.ObjectId;
+  product: Types.ObjectId;
 
   @Prop({ required: true })
   qty: number;
 
   @Prop({ required: true })
-  price: number; // harga jual per item
+  price: number;
 
   @Prop({ default: 0 })
-  disc: number; // diskon per item
+  disc: number;
 
   @Prop({ required: true })
-  amount: number; // total harga setelah diskon (price * qty - disc)
+  amount: number;
 }
 
 export const OrderDetailSchema =

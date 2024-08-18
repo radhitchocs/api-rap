@@ -29,25 +29,25 @@ export class OrdersService {
 
   async create(dto: CreateOrderDto): Promise<OrderEntity> {
     const customer = await this.customersService.getById(
-      new Types.ObjectId(dto.customer_id),
+      new Types.ObjectId(dto.customer),
     );
     if (!customer) {
       throw new NotFoundException(
-        `Customer with ID "${dto.customer_id}" not found`,
+        `Customer with ID "${dto.customer}" not found`,
       );
     }
 
-    const user = await this.userService.getUser(dto.user_id);
+    const user = await this.userService.getUser(dto.user);
     if (!user) {
-      throw new NotFoundException(`User with ID "${dto.user_id}" not found`);
+      throw new NotFoundException(`User with ID "${dto.user}" not found`);
     }
 
     const payment_method = await this.paymentMethodsService.getById(
-      dto.payment_method_id,
+      dto.payment_method,
     );
     if (!payment_method) {
       throw new NotFoundException(
-        `Payment method with ID "${dto.payment_method_id}" not found`,
+        `Payment method with ID "${dto.payment_method}" not found`,
       );
     }
 
@@ -74,10 +74,10 @@ export class OrdersService {
     const change = dto.pay - total;
 
     const newOrder = new this.orderModel({
-      customer_id: new Types.ObjectId(dto.customer_id),
-      user_id: new Types.ObjectId(dto.user_id),
-      payment_method_id: new Types.ObjectId(dto.payment_method_id),
-      product_id: product._id, // Use the product_id retrieved via batch_code
+      customer: customer.name,
+      user: user.name,
+      payment_method: payment_method.name,
+      product: product.name,
       proof_payment: dto.proof_payment,
       buy_price: product.buy_price * dto.qty,
       qty: dto.qty,
@@ -99,7 +99,7 @@ export class OrdersService {
 
     await this.orderDetailsService.create({
       order_id: savedOrder._id,
-      product_id: product._id as Types.ObjectId,
+      product: product._id as Types.ObjectId,
       qty: dto.qty,
       price: product.sell_price,
       disc: product.discount || 0,
@@ -136,7 +136,13 @@ export class OrdersService {
   }
 
   async getById(orderId: Types.ObjectId): Promise<OrderEntity | null> {
-    return this.orderModel.findById(orderId).exec();
+    return this.orderModel
+      .findById(orderId)
+      .populate('customer')
+      .populate('user')
+      .populate('payment_method')
+      .populate('product')
+      .exec();
   }
 
   async update(
@@ -148,31 +154,31 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    if (dto.customer_id) {
+    if (dto.customer) {
       const customer = await this.customersService.getById(
-        new Types.ObjectId(dto.customer_id),
+        new Types.ObjectId(dto.customer),
       );
       if (!customer) {
         throw new NotFoundException(
-          `Customer with ID "${dto.customer_id}" not found`,
+          `Customer with ID "${dto.customer}" not found`,
         );
       }
     }
 
-    if (dto.user_id) {
-      const user = await this.userService.getUser(dto.user_id);
+    if (dto.user) {
+      const user = await this.userService.getUser(dto.user);
       if (!user) {
-        throw new NotFoundException(`User with ID "${dto.user_id}" not found`);
+        throw new NotFoundException(`User with ID "${dto.user}" not found`);
       }
     }
 
-    if (dto.payment_method_id) {
+    if (dto.payment_method) {
       const payment_method = await this.paymentMethodsService.getById(
-        dto.payment_method_id,
+        dto.payment_method,
       );
       if (!payment_method) {
         throw new NotFoundException(
-          `Payment method with ID "${dto.payment_method_id}" not found`,
+          `Payment method with ID "${dto.payment_method}" not found`,
         );
       }
     }

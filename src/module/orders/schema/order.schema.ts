@@ -9,13 +9,16 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
 })
 export class OrderEntity extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Customer' })
-  customer_id: Types.ObjectId;
+  customer: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  user_id: Types.ObjectId;
+  user: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'PaymentMethod' })
-  payment_method_id: Types.ObjectId;
+  payment_method: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Product' })
+  product: Types.ObjectId;
 
   @Prop()
   proof_payment: string;
@@ -33,16 +36,13 @@ export class OrderEntity extends Document {
   note: string;
 
   @Prop()
-  product_id: Types.ObjectId;
-
-  @Prop()
   qty: number;
 
   @Prop()
-  createdAt: Date;
+  buy_price: number;
 
   @Prop()
-  buy_price: number;
+  createdAt: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderEntity);

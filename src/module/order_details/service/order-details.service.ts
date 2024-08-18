@@ -17,19 +17,17 @@ export class OrderDetailsService {
 
   async create(dto: CreateOrderDetailDto): Promise<OrderDetailEntity> {
     const product = await this.productsService.getById(
-      new Types.ObjectId(dto.product_id),
+      new Types.ObjectId(dto.product),
     );
     if (!product) {
-      throw new NotFoundException(
-        `Product with ID "${dto.product_id}" not found`,
-      );
+      throw new NotFoundException(`Product with ID "${dto.product}" not found`);
     }
 
     const amount = dto.price * dto.qty - (dto.disc || 0);
 
     const newOrderDetail = new this.orderDetailModel({
       order_id: dto.order_id,
-      product_id: dto.product_id,
+      product: product.name,
       qty: dto.qty,
       price: dto.price,
       disc: dto.disc || 0,
@@ -74,13 +72,13 @@ export class OrderDetailsService {
       }
     }
 
-    if (dto.product_id) {
+    if (dto.product) {
       const product = await this.productsService.getById(
-        new Types.ObjectId(dto.product_id),
+        new Types.ObjectId(dto.product),
       );
       if (!product) {
         throw new NotFoundException(
-          `Product with ID "${dto.product_id}" not found`,
+          `Product with ID "${dto.product}" not found`,
         );
       }
     }

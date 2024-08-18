@@ -14,22 +14,22 @@ export class CreateOrderDto {
   @ApiProperty()
   @IsMongoId()
   @IsNotEmpty()
-  customer_id: string;
+  customer: string;
 
   @ApiProperty()
   @IsMongoId()
   @IsOptional()
-  product_id?: Types.ObjectId;
+  product?: Types.ObjectId;
 
   @ApiProperty()
   @IsMongoId()
   @IsNotEmpty()
-  user_id: string;
+  user: string;
 
   @ApiProperty()
   @IsMongoId()
   @IsNotEmpty()
-  payment_method_id: string;
+  payment_method: string;
 
   @ApiProperty()
   @IsOptional()

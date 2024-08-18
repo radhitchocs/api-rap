@@ -9,7 +9,7 @@ export class CreateOrderDetailDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  product_id: Types.ObjectId;
+  product: Types.ObjectId;
 
   @ApiProperty()
   @IsNumber()

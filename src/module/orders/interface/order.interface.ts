@@ -2,14 +2,14 @@
 import { Types } from 'mongoose';
 
 export interface Order extends Document {
-  customer_id: Types.ObjectId;
-  user_id: Types.ObjectId;
-  payment_method_id: Types.ObjectId;
+  customer: Types.ObjectId;
+  user: Types.ObjectId;
+  payment_method: Types.ObjectId;
   proof_payment?: string;
   total: number;
   pay: number;
   change?: number;
   note?: string;
-  product_id: Types.ObjectId;
+  product: Types.ObjectId;
   qty: number;
 }
