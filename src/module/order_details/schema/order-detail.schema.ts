@@ -14,22 +14,16 @@ export class OrderDetailEntity extends Document {
   product_id: Types.ObjectId;
 
   @Prop({ required: true })
-  buy: number; // harga beli
-
-  @Prop({ required: true })
   qty: number;
 
   @Prop({ required: true })
-  price: number; // harga jual
+  price: number; // harga jual per item
+
+  @Prop({ default: 0 })
+  disc: number; // diskon per item
 
   @Prop({ required: true })
-  disc: number; // diskon
-
-  @Prop({ required: true })
-  amount: number; // total harga setelah diskon
-
-  @Prop({ required: true })
-  profit: number; // laba
+  amount: number; // total harga setelah diskon (price * qty - disc)
 }
 
 export const OrderDetailSchema =

@@ -25,18 +25,15 @@ export class OrderDetailsService {
       );
     }
 
-    const amount = dto.price * dto.qty - dto.disc;
-    const profit = dto.price - product.buy_price;
+    const amount = dto.price * dto.qty - (dto.disc || 0);
 
     const newOrderDetail = new this.orderDetailModel({
       order_id: dto.order_id,
       product_id: dto.product_id,
-      buy: product.buy_price,
       qty: dto.qty,
       price: dto.price,
-      disc: dto.disc,
+      disc: dto.disc || 0,
       amount: amount,
-      profit: profit,
     });
 
     return newOrderDetail.save();
@@ -87,16 +84,8 @@ export class OrderDetailsService {
         );
       }
     }
-    const product = await this.productsService.getById(
-      new Types.ObjectId(dto.product_id),
-    );
-    if (!product) {
-      throw new NotFoundException(
-        `Product with ID "${dto.product_id}" not found`,
-      );
-    }
-    const amount = dto.price * dto.qty - dto.disc;
-    const profit = dto.price - product.buy_price;
+
+    const amount = dto.price * dto.qty - (dto.disc || 0);
 
     return await this.orderDetailModel
       .findByIdAndUpdate(
@@ -104,8 +93,7 @@ export class OrderDetailsService {
         {
           $set: {
             ...dto,
-            amount: amount, // Update amount based on new calculation
-            profit: profit, // Update profit
+            amount: amount,
           },
         },
         { new: true },
