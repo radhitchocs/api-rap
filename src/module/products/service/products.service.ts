@@ -132,6 +132,8 @@ export class ProductsService {
       { _id: productId },
       {
         $set: {
+          deleted: true,
+          deletedAt: new Date(),
           is_active: false,
         },
       },

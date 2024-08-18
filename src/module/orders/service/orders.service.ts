@@ -185,10 +185,15 @@ export class OrdersService {
   }
 
   async delete(orderId: Types.ObjectId) {
-    const order = await this.orderModel.findById(orderId);
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
-    return order.deleteOne();
+    return await this.orderModel.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
   }
 }

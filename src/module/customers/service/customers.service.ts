@@ -62,11 +62,16 @@ export class CustomersService {
   }
 
   async delete(customerId: Types.ObjectId) {
-    const customer = await this.customerModel.findById(customerId);
-    if (!customer) {
-      throw new NotFoundException('Customer not found');
-    }
-    customer.is_active = false;
-    return customer.save();
+    return await this.customerModel.findOneAndUpdate(
+      { _id: customerId },
+      {
+        $set: {
+          deleted: true,
+          deletedAt: new Date(),
+          is_active: false,
+        },
+      },
+      { new: true },
+    );
   }
 }
