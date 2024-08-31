@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsString,
   IsBoolean,
-  MaxLength,
   IsMongoId,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -13,14 +12,9 @@ import { Types } from 'mongoose';
 
 export class CreateProductDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
   name: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   description: string;
 
   @ApiProperty()
@@ -29,20 +23,13 @@ export class CreateProductDto {
   image?: string;
 
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  @Type(() => Number)
   stock: number;
 
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
   @Type(() => Number)
   buy_price: number;
 
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
   @Type(() => Number)
   sell_price: number;
 

@@ -7,7 +7,6 @@ import {
   MaxLength,
   IsBoolean,
 } from 'class-validator';
-import { Types } from 'mongoose';
 
 export class CreateCustomerDto {
   @ApiProperty()
@@ -34,8 +33,4 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsBoolean()
   is_active?: boolean;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  user_id: Types.ObjectId;
 }

@@ -37,12 +37,12 @@ export class ProductsService {
         { batch_code: dto.batch_code },
         {
           $set: {
-            name: dto.name, // Update nama jika perlu
-            description: dto.description, // Update deskripsi jika perlu
+            name: existingProduct.name, // Update nama jika perlu
+            description: existingProduct.description || dto.description, // Update deskripsi jika perlu
             image: dto.image || existingProduct.image, // Gunakan gambar baru jika ada
-            stock: existingProduct.stock + dto.stock, // Tambah stok
-            buy_price: dto.buy_price, // Update harga beli jika perlu
-            sell_price: dto.sell_price, // Update harga jual jika perlu
+            stock: existingProduct.stock + (dto.stock || 1), // Tambah stok
+            buy_price: existingProduct.buy_price, // Update harga beli jika perlu
+            sell_price: existingProduct.sell_price, // Update harga jual jika perlu
             discount: dto.discount || existingProduct.discount, // Gunakan diskon baru jika ada
             is_promo:
               dto.is_promo !== undefined
@@ -124,7 +124,7 @@ export class ProductsService {
     return updatedProduct as ProductEntity;
   }
 
-  async findByBatchCode(batchCode: string): Promise<ProductInterface | null> {
+  async findByBatchCode(batchCode: string): Promise<ProductInterface> {
     return this.productModel.findOne({ batch_code: batchCode }).exec();
   }
   async delete(productId: Types.ObjectId): Promise<ProductInterface> {
