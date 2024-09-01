@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, PipelineStage } from 'mongoose';
 import { OrderEntity } from '../../orders/schema/order.schema';
 import { ProductEntity } from '../../products/schema/product.schema';
 import * as dayjs from 'dayjs';
@@ -12,59 +12,62 @@ export class AnalyticsService {
     @InjectModel(ProductEntity.name) private productModel: Model<ProductEntity>,
   ) {}
 
-  async getTopFrequentlyBoughtProducts(limit: number = 5) {
-    return this.orderModel.aggregate([
-      { $unwind: '$product_id' },
-      { $group: { _id: '$product_id', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: limit },
-      {
-        $lookup: {
-          from: 'products',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'product',
-        },
-      },
-      { $unwind: '$product' },
-      {
-        $project: {
-          _id: 0,
-          product: '$product.name',
-          count: 1,
-        },
-      },
-    ]);
-  }
-
-  async getTopFrequentlyOrderedProductsByQuantity(limit: number = 5) {
-    return this.orderModel.aggregate([
-      { $unwind: '$product_id' },
+  async getTopFrequentlyBoughtProducts(limit: number = 10): Promise<string[]> {
+    const pipeline: PipelineStage[] = [
       {
         $group: {
-          _id: '$product_id',
-          totalQuantity: { $sum: '$qty' }, // Sum the quantity ordered for each product
+          _id: '$product',
+          count: { $sum: 1 },
         },
       },
-      { $sort: { totalQuantity: -1 } }, // Sort by total quantity ordered in descending order
-      { $limit: limit }, // Limit to the top N products
       {
-        $lookup: {
-          from: 'products',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'product',
-        },
+        $sort: { count: -1 },
       },
-      { $unwind: '$product' },
+      {
+        $limit: limit,
+      },
       {
         $project: {
           _id: 0,
-          product: '$product.name',
+          product: '$_id',
+        },
+      },
+    ];
+
+    const result = await this.orderModel.aggregate(pipeline);
+    return result.map((item) => item.product);
+  }
+
+  async getTopFrequentlyOrderedProductsByQuantity(
+    limit: number = 10,
+  ): Promise<{ [key: string]: number }> {
+    const pipeline: PipelineStage[] = [
+      {
+        $group: {
+          _id: '$product',
+          totalQuantity: { $sum: '$qty' },
+        },
+      },
+      {
+        $sort: { totalQuantity: -1 },
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          _id: 0,
+          product: '$_id',
           totalQuantity: 1,
         },
       },
-    ]);
+    ];
+
+    const result = await this.orderModel.aggregate(pipeline);
+    return result.reduce((acc, item) => {
+      acc[item.product] = item.totalQuantity;
+      return acc;
+    }, {});
   }
 
   async getTotalRevenue() {
@@ -91,8 +94,8 @@ export class AnalyticsService {
     const orders = await this.orderModel.find().exec();
     const summary = orders.reduce(
       (all, order) => {
-        const month = dayjs(order.createdAt).format('MMM'); // Changed from createdAt to cdate
-        all[month] += order.total - order.buy_price; // Added a fallback for buy_price
+        const month = dayjs(order.createdAt).format('MMM');
+        all[month] += order.total - order.buy_price;
         return all;
       },
       {
