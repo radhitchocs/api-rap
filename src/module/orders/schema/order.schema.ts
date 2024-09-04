@@ -2,6 +2,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { SoftDelete } from 'src/common/mongoose-delete/soft-delete';
 
 @Schema({
   collection: 'orders',
@@ -47,3 +48,4 @@ export class OrderEntity extends Document {
 
 export const OrderSchema = SchemaFactory.createForClass(OrderEntity);
 OrderSchema.plugin(mongoosePaginate);
+OrderSchema.plugin(SoftDelete, { overrideMethods: true, deletedAt: true });

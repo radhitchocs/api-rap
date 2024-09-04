@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { SoftDelete } from 'src/common/mongoose-delete/soft-delete';
 
 @Schema({
   collection: 'stock-opnames',
@@ -40,5 +41,9 @@ export class StockOpnameEntity extends Document {
 
 const StockOpnameSchema = SchemaFactory.createForClass(StockOpnameEntity);
 StockOpnameSchema.plugin(mongoosePaginate);
+StockOpnameSchema.plugin(SoftDelete, {
+  overrideMethods: true,
+  deletedAt: true,
+});
 
 export { StockOpnameSchema };

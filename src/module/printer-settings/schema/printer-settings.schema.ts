@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
+import { SoftDelete } from 'src/common/mongoose-delete/soft-delete';
 
 @Schema({
   collection: 'printer_settings',
@@ -22,3 +23,7 @@ export const PrinterSettingsSchema = SchemaFactory.createForClass(
 );
 
 PrinterSettingsSchema.plugin(mongoosePaginate);
+PrinterSettingsSchema.plugin(SoftDelete, {
+  overrideMethods: true,
+  deletedAt: true,
+});

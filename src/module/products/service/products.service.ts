@@ -70,11 +70,20 @@ export class ProductsService {
       },
     };
 
-    return this.productModel.paginate({}, options);
+    const products = await this.productModel.paginate({}, options);
+    if (!products || products.docs.length === 0) {
+      throw new NotFoundException('No products found');
+    }
+
+    return products;
   }
 
   async getById(productId: Types.ObjectId): Promise<ProductInterface> {
-    return this.productModel.findById(productId).exec();
+    const product = await this.productModel.findById(productId).exec();
+    if (!product) {
+      throw new NotFoundException(`Product with ID "${productId}" not found`);
+    }
+    return product;
   }
 
   async update(
@@ -91,7 +100,11 @@ export class ProductsService {
     const product = await this.productModel.findById(productId).lean();
 
     if (!product) {
-      throw new Error('Product not found');
+      throw new NotFoundException('Product not found');
+    }
+
+    if (dto.stock !== undefined && (isNaN(dto.stock) || dto.stock < 0)) {
+      throw new Error('Invalid stock value');
     }
 
     return await this.productModel.findOneAndUpdate(
@@ -125,9 +138,23 @@ export class ProductsService {
   }
 
   async findByBatchCode(batchCode: string): Promise<ProductInterface> {
-    return this.productModel.findOne({ batch_code: batchCode }).exec();
+    const product = await this.productModel
+      .findOne({ batch_code: batchCode })
+      .exec();
+    if (!product) {
+      throw new NotFoundException(
+        `Product with batch code "${batchCode}" not found`,
+      );
+    }
+    return product;
   }
+
   async delete(productId: Types.ObjectId): Promise<ProductInterface> {
+    const product = await this.productModel.findById(productId).exec();
+    if (!product) {
+      throw new NotFoundException(`Product with ID "${productId}" not found`);
+    }
+
     return await this.productModel.findOneAndUpdate(
       { _id: productId },
       {

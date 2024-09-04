@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { SoftDelete } from 'src/common/mongoose-delete/soft-delete';
 
 @Schema({
   collection: 'users',
@@ -20,3 +21,4 @@ export class User extends Document {
   password: string;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.plugin(SoftDelete, { overrideMethods: true, deletedAt: true });
