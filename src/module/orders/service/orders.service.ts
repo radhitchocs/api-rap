@@ -64,25 +64,32 @@ export class OrdersService {
       );
     }
 
-    const total = dto.qty * product.sell_price;
+    // Ensure valid numeric values
+    const sellPrice = product.sell_price || 0;
+    const buyPrice = product.buy_price || 0;
+    const qty = dto.qty || 1;
+    const pay = dto.pay || 0;
 
-    if (dto.pay < total) {
+    const total = qty * sellPrice;
+    const totalBuyPrice = qty * buyPrice;
+
+    if (pay < total) {
       throw new Error(
-        `Insufficient payment. Total: ${total}, Paid: ${dto.pay}`,
+        `Insufficient payment. Total: ${total}, Paid: ${pay}`,
       );
     }
-    const change = dto.pay - total;
+    const change = pay - total;
 
     const newOrder = new this.orderModel({
-      customer: customer.name,
-      user: user.name,
-      payment_method: payment_method.name,
-      product: product.name,
+      customer: new Types.ObjectId(dto.customer),
+      user: new Types.ObjectId(dto.user),
+      payment_method: new Types.ObjectId(dto.payment_method),
+      product: product._id as Types.ObjectId,
       proof_payment: dto.proof_payment,
-      buy_price: product.buy_price * dto.qty,
-      qty: dto.qty,
+      buy_price: totalBuyPrice,
+      qty: qty,
       total: total,
-      pay: dto.pay,
+      pay: pay,
       change: change,
       note: dto.note,
     });
@@ -91,7 +98,7 @@ export class OrdersService {
       _id: Types.ObjectId;
     };
 
-    const updatedStock = product.stock - dto.qty;
+    const updatedStock = product.stock - qty;
     await this.productsService.updateStock(
       product._id as Types.ObjectId, // Use product._id directly
       updatedStock,
@@ -100,8 +107,8 @@ export class OrdersService {
     await this.orderDetailsService.create({
       order_id: savedOrder._id,
       product: product._id as Types.ObjectId,
-      qty: dto.qty,
-      price: product.sell_price,
+      qty: qty,
+      price: sellPrice,
       disc: product.discount || 0,
     });
 

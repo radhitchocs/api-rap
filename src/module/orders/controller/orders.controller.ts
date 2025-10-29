@@ -39,7 +39,7 @@ export class OrdersController {
   ): Promise<OrderEntity> {
     const result = await this.ordersService.create({
       ...dto,
-      proof_payment: file.filename,
+      proof_payment: file ? file.filename : undefined,
     });
     return result;
   }

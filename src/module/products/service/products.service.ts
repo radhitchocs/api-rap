@@ -134,7 +134,7 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID "${productId}" not found`);
     }
 
-    return updatedProduct as ProductEntity;
+    return updatedProduct as unknown as ProductEntity;
   }
 
   async findByBatchCode(batchCode: string): Promise<ProductInterface> {
